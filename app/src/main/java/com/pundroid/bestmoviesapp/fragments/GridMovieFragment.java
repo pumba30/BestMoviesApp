@@ -248,7 +248,7 @@ public class GridMovieFragment extends Fragment {
 
 
     private class DownloadAsyncTask extends AsyncTask<String, Integer, DataFromJSON> {
-        public static final String API_KEY = "d1a2f8dc42f6388052172df57a6aba41";
+        public static final String API_KEY = "";
 
 
         // params - запрос latest, popular, similar и т.д.
