@@ -1,0 +1,37 @@
+<LinearLayout
+    android:id="@+id/container_detail_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+
+        <include layout="@layout/toolbar"/>
+
+
+        <com.astuetz.PagerSlidingTabStrip
+            android:id="@+id/tabs"
+            app:pstsDividerColor="@color/dark_dark_green"
+            app:pstsIndicatorColor="@color/dark_green"
+            app:pstsUnderlineColor="@color/dark_green"
+            app:pstsShouldExpand="true"
+            app:pstsTextAllCaps="true"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="#435bcc2d">
+        </com.astuetz.PagerSlidingTabStrip>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            tools:context=".DetailMovieActivity"/>
+
+    </LinearLayout>
+
+
+
