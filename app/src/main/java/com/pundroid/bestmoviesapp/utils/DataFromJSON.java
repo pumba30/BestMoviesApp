@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class DataFromJSON {
 
     public static final String TAG = DataFromJSON.class.getSimpleName();
-    public static final int FIELD_NAME = 1;
     public static final String NAME = "name";
 
     public static final String BASE_IMAGE_POSTER_PATH = "http://image.tmdb.org/t/p/w342//";
@@ -44,15 +43,13 @@ public class DataFromJSON {
     public static final String ADULT = "adult";
 
     private String movieJSONString;
-    private String movieJSONStringOnce = "";
 
-    public DataFromJSON(String movieJSONString) throws JSONException {
-        this.movieJSONString = movieJSONString;
+    public DataFromJSON() throws JSONException {
     }
 
 
     public ArrayList<String> getPosterPathFromJSON() throws JSONException {
-        Log.d(TAG, "getPosterPathFromJSON " + movieJSONString);
+        Log.d(TAG, movieJSONString);
         JSONArray jsonArrayResult = getResultFromJSON(movieJSONString);
         ArrayList<String> pathToPosterMoviesArray = new ArrayList<>();
         for (int i = 0; i < jsonArrayResult.length(); i++) {
@@ -75,24 +72,23 @@ public class DataFromJSON {
 
     public Movie getMovie() throws JSONException {
 
-        // JSONArray jsonArrayResult = getResultFromJSON(movieJSONString);
         Movie movie = new Movie();
-        Log.d(TAG, " getResultFromJSON " + movieJSONStringOnce);
+        Log.d(TAG, " getResultFromJSON " + movieJSONString);
 
         try {
-            JSONObject movieItem = new JSONObject(movieJSONStringOnce);
-            movie.setAdult(movieItem.getBoolean(ADULT));
+            JSONObject movieItem = new JSONObject(movieJSONString);
+            movie.setAdult(movieItem.optBoolean(ADULT, false));
             movie.setBackdropPath(movieItem.optString(BACKDROP_PATH));
-            movie.setId(movieItem.optInt(ID_MOVIE));
-            movie.setOriginalLanguage(movieItem.optString(ORIG_LANGUAGE));
-            movie.setOriginalTitle(movieItem.optString(ORIG_TITLE));
-            movie.setOverview(movieItem.optString(OVERVIEW));
-            movie.setReleaseDate(movieItem.optString(RELEASE_DATE));
-            movie.setPopularity(movieItem.optLong(POPULARITY));
-            movie.setOriginalTitle(movieItem.optString(ORIG_TITLE));
+            movie.setId(movieItem.optInt(ID_MOVIE, 0));
+            movie.setOriginalLanguage(movieItem.optString(ORIG_LANGUAGE, "Nothing Found"));
+            movie.setOriginalTitle(movieItem.optString(ORIG_TITLE, "Nothing Found"));
+            movie.setOverview(movieItem.optString(OVERVIEW, "Nothing Found"));
+            movie.setReleaseDate(movieItem.optString(RELEASE_DATE, "Nothing Found"));
+            movie.setPopularity(movieItem.optLong(POPULARITY, 0));
+            movie.setOriginalTitle(movieItem.optString(ORIG_TITLE, "Nothing Found"));
             movie.setVoteAverage(movieItem.optLong(VOTE_AVERAGE, 0));
-            movie.setVideo(movieItem.optBoolean(VIDEO));
-            movie.setVoteCount(movieItem.optInt(VOTE_COUNT));
+            movie.setVideo(movieItem.optBoolean(VIDEO, false));
+            movie.setVoteCount(movieItem.optInt(VOTE_COUNT, 0));
             movie.setPosterPath(movieItem.optString(POSTER_PATH));
             movie.setHomePage(movieItem.optString(HOME_PAGE, "Nothing Found"));
             movie.setTagLine(movieItem.optString(TAG_LINE, "Nothing Found"));
@@ -100,10 +96,16 @@ public class DataFromJSON {
             movie.setRevenue(movieItem.optInt(REVENUE, 0));
             movie.setRuntime(movieItem.optInt(RUN_TIME, 0));
 
+            ArrayList<String> genresList = new ArrayList<>();
             JSONArray genresJSON = movieItem.getJSONArray(GENRES);
-            movie.setGenres(genresJSON.getString(FIELD_NAME));
+            for (int i = 0; i < genresJSON.length(); i++) {
+                JSONObject objGenre = (JSONObject) genresJSON.get(i);
+                String genreStr = objGenre.optString(NAME, "Nothing found");
+                genresList.add(genreStr + " / ");
+            }
+            movie.setGenres(genresList);
 
-            ArrayList<String> companyNames = movie.getProductionCompanies();
+            ArrayList<String> companyNames = new ArrayList<>();
             JSONArray prodCompanies = movieItem.optJSONArray(PRODUCTION_COMPANIES);
             for (int i = 0; i < prodCompanies.length(); i++) {
                 JSONObject company = (JSONObject) prodCompanies.get(i);
@@ -112,21 +114,17 @@ public class DataFromJSON {
             }
             movie.setProductionCompanies(companyNames);
 
-            ArrayList<String> countryNames = movie.getProductionCountries();
-            JSONArray prodCountries = movieItem.getJSONArray((PRODUCTION_COUNTRIES));
+            ArrayList<String> countryNames = new ArrayList<>();
+            JSONArray prodCountries = movieItem.getJSONArray(PRODUCTION_COUNTRIES);
             for (int i = 0; i < prodCountries.length(); i++) {
                 JSONObject country = prodCountries.optJSONObject(i);
                 String countryName = country.optString(NAME, "Nothing");
-                companyNames.add(countryName + " / ");
+                countryNames.add(countryName + " / ");
             }
             movie.setProductionCountries(countryNames);
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
         return movie;
     }
 
@@ -143,14 +141,8 @@ public class DataFromJSON {
         return movieItem.optInt(ID_MOVIE);
     }
 
-    public JSONArray getJsonArrayResult() throws JSONException {
-        JSONArray jsonArrayResult = getResultFromJSON(movieJSONString);
-        return jsonArrayResult;
+    public void setMovieJSONString(String movieJSONString) {
+        this.movieJSONString = movieJSONString;
     }
-
-    public void setMovieJSONStringOnce(String movieJSONString) {
-        movieJSONStringOnce = movieJSONString;
-    }
-
 
 }

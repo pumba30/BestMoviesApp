@@ -24,7 +24,7 @@ public class Movie implements Parcelable {
     private String posterPath;
     private ArrayList<String> productionCompanies;
     private ArrayList<String> productionCountries;
-    private String genres;
+    private ArrayList<String> genres;
     private long voteAverage;
     private long popularity;
     private int id;
@@ -50,7 +50,7 @@ public class Movie implements Parcelable {
         posterPath = in.readString();
         productionCompanies = in.createStringArrayList();
         productionCountries = in.createStringArrayList();
-        genres = in.readString();
+        genres = in.createStringArrayList();
         voteAverage = in.readLong();
         popularity = in.readLong();
         id = in.readInt();
@@ -99,11 +99,11 @@ public class Movie implements Parcelable {
         this.budget = budget;
     }
 
-    public String getGenres() {
+    public ArrayList<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(String genres) {
+    public void setGenres(ArrayList<String> genres) {
         this.genres = genres;
     }
 
@@ -252,7 +252,7 @@ public class Movie implements Parcelable {
         dest.writeString(posterPath);
         dest.writeStringList(productionCompanies);
         dest.writeStringList(productionCountries);
-        dest.writeString(genres);
+        dest.writeStringList(genres);
         dest.writeLong(voteAverage);
         dest.writeLong(popularity);
         dest.writeInt(id);

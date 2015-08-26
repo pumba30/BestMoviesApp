@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -30,35 +28,24 @@ import com.pundroid.bestmoviesapp.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.ImageGridAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
+import com.pundroid.bestmoviesapp.interfaces.AsyncResponse;
 import com.pundroid.bestmoviesapp.object.Movie;
 import com.pundroid.bestmoviesapp.slidingmenu.NavDrawerItem;
 import com.pundroid.bestmoviesapp.utils.DataFromJSON;
+import com.pundroid.bestmoviesapp.utils.DownloadAsyncTask;
 
 import org.json.JSONException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
  * Created by pumba30 on 19.08.2015.
  */
-public class GridMovieFragment extends Fragment {
+public class GridMovieFragment extends Fragment implements AsyncResponse {
     public static final String TAG = GridMovieFragment.class.getSimpleName();
     public static final String TOP_RATED = "top_rated";
     private static final String REQUIRED_MOVIE_ID = "required_movie_id";
-    public static final String SCHEME = "http";
-    public static final String AUTHORITY = "api.themoviedb.org";
-    public static final String SEGMENT_NUMBER_THREE = "3";
-    public static final String SEGMENT_DISCOVER = "discover";
-    public static final String SEGMENT_MOVIE = "movie";
-    public static final String PARAMETER_APY_KEY = "api_key";
-    public static final String PARAMETER_PAGE = "page";
-    public static final String PARAMETER_QUERY = "query";
+    private static final String GET_TOP_RATED_MOVIE = "get_top_rated_movie";
     private GridView gridView;
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
@@ -66,8 +53,14 @@ public class GridMovieFragment extends Fragment {
     private int number_page = 1;
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter navDrawerListAdapter;
+
     private DataFromJSON dataFromJSON;
 
+    private enum DownloadAction {
+        TOP_RATED_MOVIE, MOVIE_BY_ID
+    }
+
+    private DownloadAction currentAction;
 
     public GridMovieFragment() {
 
@@ -83,13 +76,18 @@ public class GridMovieFragment extends Fragment {
         // nav drawer icons from resources
         navMenuIcons = getResources()
                 .obtainTypedArray(R.array.nav_drawer_icons);
+        try {
+            dataFromJSON = new DataFromJSON();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
         //первый параметр запрос, второй - номер страницы (page)
-        String[] query = new String[]{TOP_RATED, String.valueOf(number_page)};
+        String[] query = new String[]{GET_TOP_RATED_MOVIE, TOP_RATED, String.valueOf(number_page)};
         toastShowPageNumber();
         try {
             updateMovie(query);
@@ -104,7 +102,7 @@ public class GridMovieFragment extends Fragment {
         View view = inflater.inflate(R.layout.grid_layout, container, false);
         gridView = (GridView) view.findViewById(R.id.gridViewMovieItem);
 
-        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         CharSequence drawerTitle;
         CharSequence title = drawerTitle = activity.getTitle();
 
@@ -153,33 +151,19 @@ public class GridMovieFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                //  Movie movie = dataFromJSON.getMovie(position);
-                int movieId = dataFromJSON.getIdMovie(position);
-                String[] query = new String[]{REQUIRED_MOVIE_ID, String.valueOf(movieId)};
-                DownloadAsyncTask asyncTask = new DownloadAsyncTask();
-                asyncTask.execute(query);
-                Log.d(TAG, asyncTask.getStatus().toString());
-                //используется тот же dataFromJSON
-
-                try {
-                    Movie movie = dataFromJSON.getMovie();
-                    Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
-                    intent.putExtra(Movie.MOVIE_OBJECT, movie);//TODO здесь уже ложиться фильм без параметров
-                    startActivity(intent);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                getDownloadMovieDetail(position);
             }
         });
         return view;
     }
 
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private void getDownloadMovieDetail(int position) {
+        currentAction = DownloadAction.MOVIE_BY_ID;
+        int movieId = dataFromJSON.getIdMovie(position);
+        String[] query = new String[]{REQUIRED_MOVIE_ID, String.valueOf(movieId)};
+        newDownloadTask(query);
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -197,12 +181,12 @@ public class GridMovieFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 number_page++;
-                downloadMoviePoster(TOP_RATED, number_page);
+                downloadMoviePoster(number_page);
                 return true;
             case R.id.action_back:
                 number_page--;
                 if (number_page <= 0) number_page = 1;
-                downloadMoviePoster(TOP_RATED, number_page);
+                downloadMoviePoster(number_page);
                 return true;
             case R.id.action_search:
                 Log.d(TAG, "SEARCH!");
@@ -214,11 +198,12 @@ public class GridMovieFragment extends Fragment {
     }
 
     //загрузим с параметрами query постеры
-    private void downloadMoviePoster(String kindOfMovie, int number_page) {
-        String[] query = new String[]{kindOfMovie, String.valueOf(number_page)};
+    private void downloadMoviePoster(int number_page) {
+        currentAction = DownloadAction.TOP_RATED_MOVIE;
+        String[] query = new String[]{GET_TOP_RATED_MOVIE, TOP_RATED, String.valueOf(number_page)};
         navDrawerItems.clear();
         navDrawerListAdapter.notifyDataSetChanged();
-        new DownloadAsyncTask().execute(query);
+        newDownloadTask(query);
         toastShowPageNumber();
     }
 
@@ -226,12 +211,18 @@ public class GridMovieFragment extends Fragment {
         Toast.makeText(getActivity(), "Page " + String.valueOf(number_page), Toast.LENGTH_SHORT).show();
     }
 
+    private void newDownloadTask(String[] query) {
+        DownloadAsyncTask task = new DownloadAsyncTask();
+        task.execute(query);
+        task.response = this;
+    }
+
     //загрузим JSON запрос
     public void updateMovie(String[] query) throws JSONException {
         if (isConnected()) {
+            currentAction = DownloadAction.TOP_RATED_MOVIE;
             //вызов загрузки через параметр:"latest"|"top_rated" - запросы
-            DownloadAsyncTask task = new DownloadAsyncTask();
-            task.execute(query);
+            newDownloadTask(query);
         } else {
             Toast.makeText(getActivity(),
                     "You do not have Internet connection", Toast.LENGTH_SHORT).show();
@@ -246,139 +237,33 @@ public class GridMovieFragment extends Fragment {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
+    @Override
+    public void processFinish(String result) throws JSONException {
 
-    private class DownloadAsyncTask extends AsyncTask<String, Integer, DataFromJSON> {
-        public static final String API_KEY = "";
 
-
-        // params - запрос latest, popular, similar и т.д.
-        @Override
-        protected DataFromJSON doInBackground(String... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-
-            Log.d(TAG, "Build URL");
-            //   http://api.themoviedb.org/3/discover/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&page=1&query=top_rated
-            //   http://api.themoviedb.org/3/movie/116741?api_key=d1a2f8dc42f6388052172df57a6aba41
-            Log.d(TAG, "prePARAMS [0]= " + params[0]);
-
-            // params[0] - REQUIRED_MOVIE_ID, params[1] - ID required film
-            if (params[0] == REQUIRED_MOVIE_ID) {
-                Log.d(TAG, "PARAMS [0]= " + params[0]);
-                Uri.Builder builderUri = new Uri.Builder();
-                builderUri.scheme(SCHEME).authority(AUTHORITY)
-                        .appendPath(SEGMENT_NUMBER_THREE)
-                        .appendPath(SEGMENT_MOVIE)
-                        .appendPath(params[1])
-                        .appendQueryParameter(PARAMETER_APY_KEY, API_KEY);
-                String myUrl = builderUri.toString();
+        switch (currentAction) {
+            case TOP_RATED_MOVIE:
                 try {
-
-                    URL urlMovie = new URL(myUrl);
-                    HttpURLConnection connection = (HttpURLConnection) urlMovie.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.connect();
-                    int status = connection.getResponseCode();
-                    Log.d(TAG, "Connection status " + status);
-
-                    InputStream inputStream = connection.getInputStream();
-                    StringBuffer stringBuffer = new StringBuffer();
-
-                    if (inputStream == null) {
-                        return null;
-                    }
-
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line = null;
-
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuffer.append(line).append("/n");
-                    }
-
-                    if (stringBuffer.length() == 0) {
-                        return null;
-                    }
-
-                    String movieJSONString1 = stringBuffer.toString();
-                    dataFromJSON.setMovieJSONStringOnce(movieJSONString1);
-
-
-                } catch (IOException e) {
+                    dataFromJSON.setMovieJSONString(result);
+                    ArrayList<String> listPathToPoster = dataFromJSON.getPosterPathFromJSON();
+                    gridView.setAdapter(new ImageGridAdapter(getActivity(), listPathToPoster));
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                return dataFromJSON;
-
-            } else {
-                // params[0] - query (top_rated и т.д.) params[1] - number page
-                Uri.Builder builderUri = new Uri.Builder();
-                builderUri.scheme(SCHEME).authority(AUTHORITY)
-                        .appendPath(SEGMENT_NUMBER_THREE)
-                        .appendPath(SEGMENT_DISCOVER)
-                        .appendPath(SEGMENT_MOVIE)
-                        .appendQueryParameter(PARAMETER_APY_KEY, API_KEY)
-                        .appendQueryParameter(PARAMETER_PAGE, params[1])
-                        .appendQueryParameter(PARAMETER_QUERY, params[0]);
-                String myUrl = builderUri.toString();
-                Log.d(TAG, "MY URL: " + myUrl);
+                break;
+            case MOVIE_BY_ID:
+                dataFromJSON.setMovieJSONString(result);
 
                 try {
-                    URL urlMovie = new URL(myUrl);
-                    HttpURLConnection connection = (HttpURLConnection) urlMovie.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.connect();
-                    int status = connection.getResponseCode();
-                    Log.d(TAG, "Connection status " + status);
+                    Movie movie = dataFromJSON.getMovie();
+                    Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
+                    intent.putExtra(Movie.MOVIE_OBJECT, movie);
+                    startActivity(intent);
 
-                    InputStream inputStream = connection.getInputStream();
-                    StringBuffer stringBuffer = new StringBuffer();
-
-                    if (inputStream == null) {
-                        return null;
-                    }
-
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line = null;
-
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuffer.append(line).append("/n");
-                    }
-
-                    if (stringBuffer.length() == 0) {
-                        return null;
-                    }
-
-                    String movieJSONString = stringBuffer.toString();
-                    dataFromJSON = new DataFromJSON(movieJSONString);
-                    Log.d(TAG, movieJSONString);
-
-                } catch (IOException | JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                return dataFromJSON;
-            }
-
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(DataFromJSON data) {
-            try {
-                ArrayList<String> listPathToPoster = data.getPosterPathFromJSON();
-
-                gridView.setAdapter(new ImageGridAdapter(getActivity(), listPathToPoster));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
+                break;
         }
     }
 }

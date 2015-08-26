@@ -16,6 +16,8 @@ import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.object.Movie;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
 
@@ -70,8 +72,13 @@ public class DetailMovieActivityFragment extends Fragment {
         TextView origTitle = (TextView) view.findViewById(R.id.tv_original_title);
         origTitle.setText(movie.getOriginalTitle());
 
-        TextView genre = (TextView) view.findViewById(R.id.tv_genre_title);// // FIXME: 25.08.2015 null
-        genre.setText(movie.getGenres());
+        TextView genre = (TextView) view.findViewById(R.id.tv_genre_title);
+        ArrayList<String> genresList = movie.getGenres();
+        if (genresList == null) {
+            genresList = new ArrayList<>();
+            genresList.add("Nothing found");
+        }
+        genre.setText(getStrings(genresList));
 
         TextView releaseDate = (TextView) view.findViewById(R.id.tv_release_date_title);
         releaseDate.setText(movie.getReleaseDate());
@@ -82,26 +89,51 @@ public class DetailMovieActivityFragment extends Fragment {
         TextView voteCount = (TextView) view.findViewById(R.id.tv_vote_count_header_title);
         voteCount.setText(String.valueOf(movie.getVoteCount()));
 
-        TextView tagLine = (TextView) view.findViewById(R.id.tv_tag_line_title);//// FIXME: 25.08.2015  null
+        TextView tagLine = (TextView) view.findViewById(R.id.tv_tag_line_title);
         tagLine.setText(movie.getTagLine());
 
+        TextView prodComp = (TextView) view.findViewById(R.id.tv_production_companies_description);
+        ArrayList<String> prodCompList = movie.getProductionCompanies();
+        if (prodCompList == null) {
+            prodCompList = new ArrayList<>();
+            prodCompList.add("Nothing found");
+        }
+        prodComp.setText(getStrings(prodCompList));
+
+        TextView prodCountries = (TextView) view.findViewById(R.id.tv_production_countries_description);
+        ArrayList<String> prodCountriesList = movie.getProductionCountries();
+        if (prodCountriesList == null) {
+            prodCountriesList = new ArrayList<>();
+            prodCountriesList.add("Nothing found");
+        }
+        prodCountries.setText(getStrings(prodCountriesList));
 
         TextView overview = (TextView) view.findViewById(R.id.tv_overview_title);
         overview.setText(movie.getOverview());
 
-        TextView budget = (TextView) view.findViewById(R.id.cell_budget);// FIXME: 25.08.2015  null
+        TextView budget = (TextView) view.findViewById(R.id.cell_budget);
         budget.setText(String.valueOf(movie.getBudget()));
 
-        TextView runtime = (TextView) view.findViewById(R.id.cell_runtime);// FIXME: 25.08.2015  null
+        TextView runtime = (TextView) view.findViewById(R.id.cell_runtime);
         runtime.setText(String.valueOf(movie.getRuntime()));
 
-        TextView revenue = (TextView) view.findViewById(R.id.cell_revenue);// FIXME: 25.08.2015  null
+        TextView revenue = (TextView) view.findViewById(R.id.cell_revenue);
         revenue.setText(String.valueOf(movie.getRuntime()));
 
         TextView homePage = (TextView) view.findViewById(R.id.tv_homepage_description);
         homePage.setText(movie.getHomePage());
     }
 
+
+    //удалим в строке последний слеш
+    private String getStrings(ArrayList<String> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String s : list) {
+            stringBuilder = stringBuilder.append(s + " ");
+        }
+        String s = stringBuilder.toString();
+        return s.substring(0, s.length() - 3);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
