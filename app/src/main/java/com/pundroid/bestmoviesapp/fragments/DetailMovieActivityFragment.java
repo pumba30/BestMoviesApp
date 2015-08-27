@@ -3,6 +3,7 @@ package com.pundroid.bestmoviesapp.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pundroid.bestmoviesapp.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.object.Movie;
 import com.squareup.picasso.Picasso;
@@ -20,17 +22,11 @@ import java.util.ArrayList;
 
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
+    private Movie movie;
 
 
     private static DetailMovieActivityFragment instance;
-    private Activity activity;
-
-
-    public DetailMovieActivityFragment() {
-    }
-
-
-    public static DetailMovieActivityFragment newInstance() {
+        public static DetailMovieActivityFragment newInstance() {
         if (instance == null) {
             instance = new DetailMovieActivityFragment();
         }
@@ -43,13 +39,21 @@ public class DetailMovieActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        DetailMovieActivity detailMovieActivity = (DetailMovieActivity) activity;
+        movie = detailMovieActivity.movie;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
-
+        Log.d(TAG, "onCreateView");
         fillLayout(view);
 
 
@@ -57,7 +61,7 @@ public class DetailMovieActivityFragment extends Fragment {
     }
 
     private void fillLayout(View view) {
-        Movie movie = getArguments().getParcelable(Movie.MOVIE_OBJECT);
+       // Movie movie = getArguments().getParcelable(Movie.MOVIE_OBJECT);
         assert movie != null;
         String pathBackdrop = Movie.BASE_BACKDROP_PATH + movie.getBackdropPath();
         ImageView imageViewBackDrop = (ImageView) view.findViewById(R.id.image_view_backdrop);
@@ -134,6 +138,8 @@ public class DetailMovieActivityFragment extends Fragment {
         String s = stringBuilder.toString();
         return s.substring(0, s.length() - 3);
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

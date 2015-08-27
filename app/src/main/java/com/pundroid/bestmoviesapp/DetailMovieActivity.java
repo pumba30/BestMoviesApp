@@ -8,12 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.pundroid.bestmoviesapp.adapters.MovieDetailPagerAdapter;
-import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
+import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
 import com.pundroid.bestmoviesapp.object.Movie;
 
 public class DetailMovieActivity extends ActionBarActivity {
+    public static final String DATA_ACTORS_STRING = "data_actors_string";
     public Movie movie;
+    private String dataActorsStr;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,37 +30,28 @@ public class DetailMovieActivity extends ActionBarActivity {
         //передали  объект Movie для дальнейшей обработки
 
         movie = getIntent().getExtras().getParcelable(Movie.MOVIE_OBJECT);
+        assert movie != null;
         if (movie.getOriginalTitle() != null) {
             getSupportActionBar().setTitle(movie.getOriginalTitle());
         }
 
 
         ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
-        pager.setAdapter(new MovieDetailPagerAdapter(getSupportFragmentManager()));
+        PagerTabSlideAdapter movieDetailPagerAdapter
+                = new PagerTabSlideAdapter(getSupportFragmentManager());
+
+
+        pager.setAdapter(movieDetailPagerAdapter);
+
+
 
         // Bind the tabs to the ViewPager
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(pager);
 
-        DetailMovieActivityFragment  detailMovieActivityFragment
-                = DetailMovieActivityFragment.newInstance();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Movie.MOVIE_OBJECT, movie);
-        detailMovieActivityFragment.setArguments(bundle);
 
 
-
-
-
-//        Fragment fragmentDetail = new DetailMovieActivityFragment();
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        FragmentTransaction transaction = fragmentManager.beginTransaction();
-//        transaction.replace(R.id.container_detail_activity, fragmentDetail)
-//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                .commit();
-
-
-    }
+}
 
 
     @Override
@@ -72,4 +65,6 @@ public class DetailMovieActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
+
+
 }

@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.pundroid.bestmoviesapp.fragments.CastFragment;
 import com.pundroid.bestmoviesapp.interfaces.AsyncResponse;
 
 import org.json.JSONException;
@@ -31,8 +32,8 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
     public static final String PARAMETER_APY_KEY = "api_key";
     public static final String PARAMETER_PAGE = "page";
     public static final String PARAMETER_QUERY = "query";
-    private static final String GET_TOP_RATED_MOVIE = "get_top_rated_movie";
-    private DataFromJSON dataFromJSON;
+    public static final String GET_TOP_RATED_MOVIE = "get_top_rated_movie";
+    public static final String CREDITS = "credits";
 
     public AsyncResponse response = null;
 
@@ -48,7 +49,6 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
         if (params.length == 0) {
             return null;
         }
-        //TODO  вынести класс для построения строки для построения запросов
         Log.d(TAG, "Build URL");
         //   http://api.themoviedb.org/3/discover/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&page=1&query=top_rated
         //   http://api.themoviedb.org/3/movie/116741?api_key=d1a2f8dc42f6388052172df57a6aba41
@@ -73,6 +73,15 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
                     .appendQueryParameter(PARAMETER_APY_KEY, API_KEY)
                     .appendQueryParameter(PARAMETER_QUERY, params[1])
                     .appendQueryParameter(PARAMETER_PAGE, params[2]);
+        }
+        // http://api.themoviedb.org/3/movie/135397/credits?api_key=d1a2f8dc42f6388052172df57a6aba41
+        if(params[0].equals(CastFragment.ALL_CAST_ACTORS)){
+            builderUri.scheme(SCHEME).authority(AUTHORITY)
+                    .appendPath(SEGMENT_NUMBER_THREE)
+                    .appendPath(SEGMENT_MOVIE)
+                    .appendPath(params[1])
+                    .appendPath(CREDITS)
+                    .appendQueryParameter(PARAMETER_APY_KEY, API_KEY);
         }
 
         String myUrl = builderUri.toString();
