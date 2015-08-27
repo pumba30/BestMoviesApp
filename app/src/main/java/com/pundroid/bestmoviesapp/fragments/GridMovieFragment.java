@@ -29,7 +29,7 @@ import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.ImageGridAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
 import com.pundroid.bestmoviesapp.interfaces.AsyncResponse;
-import com.pundroid.bestmoviesapp.object.Movie;
+import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.slidingmenu.NavDrawerItem;
 import com.pundroid.bestmoviesapp.utils.DataFromJSON;
 import com.pundroid.bestmoviesapp.utils.DownloadAsyncTask;

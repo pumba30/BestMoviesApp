@@ -1,4 +1,4 @@
-package com.pundroid.bestmoviesapp.object;
+package com.pundroid.bestmoviesapp.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;

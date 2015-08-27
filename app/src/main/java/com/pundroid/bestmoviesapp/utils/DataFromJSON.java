@@ -2,7 +2,7 @@ package com.pundroid.bestmoviesapp.utils;
 
 import android.util.Log;
 
-import com.pundroid.bestmoviesapp.object.Movie;
+import com.pundroid.bestmoviesapp.objects.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;

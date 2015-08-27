@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.pundroid.bestmoviesapp.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
-import com.pundroid.bestmoviesapp.object.Movie;
+import com.pundroid.bestmoviesapp.objects.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

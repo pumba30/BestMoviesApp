@@ -24,7 +24,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="Shon Connery"
             android:textStyle="bold"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"/>
 
         <TextView

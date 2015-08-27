@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
-import com.pundroid.bestmoviesapp.object.Movie;
+import com.pundroid.bestmoviesapp.objects.Movie;
 
 public class DetailMovieActivity extends ActionBarActivity {
     public static final String DATA_ACTORS_STRING = "data_actors_string";

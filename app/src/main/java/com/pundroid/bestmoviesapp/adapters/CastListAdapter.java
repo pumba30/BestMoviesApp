@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pundroid.bestmoviesapp.R;
-import com.pundroid.bestmoviesapp.object.Actor;
+import com.pundroid.bestmoviesapp.objects.Actor;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -47,21 +47,37 @@ public class CastListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.item_list_tab_cast, parent, false);
 
+            viewHolder = new ViewHolder();
+            viewHolder.nameActor = (TextView) convertView.findViewById(R.id.name_actor_describe);
+            viewHolder.characterActor = (TextView) convertView.findViewById(R.id.character_actor_describe);
+            viewHolder.imageActor = (ImageView) convertView.findViewById(R.id.imageView_actor);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        TextView textView1 = (TextView) convertView.findViewById(R.id.name_actor_describe);
-        TextView textView2 = (TextView) convertView.findViewById(R.id.character_actor_describe);
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView_actor);
 
-        textView1.setText(actors.get(position).getNameActor());
-        textView2.setText(actors.get(position).getCharacterActor());
-        String path = BASE_PATH_TO_IMAGE + actors.get(position).getPathToImageActor();
-        Picasso.with(context).load(path).into(imageView);
+        Actor actor = actors.get(position);
+        if (actor.getProfilePath() != null
+                || actor.getName() != null
+                || actor.getCharacter() != null){
+            viewHolder.nameActor.setText(actor.getName());
+            viewHolder.characterActor.setText(actor.getCharacter());
+            String path = actor.getProfilePath();
+            Picasso.with(context).load(BASE_PATH_TO_IMAGE + path).into(viewHolder.imageActor);
+        }
+            return convertView;
+    }
 
 
-        return convertView;
+    static class ViewHolder {
+        TextView nameActor;
+        TextView characterActor;
+        ImageView imageActor;
     }
 }

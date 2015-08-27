@@ -1,6 +1,5 @@
 package com.pundroid.bestmoviesapp.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -8,91 +7,87 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.pundroid.bestmoviesapp.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.CastListAdapter;
-import com.pundroid.bestmoviesapp.object.Actor;
-import com.pundroid.bestmoviesapp.object.Movie;
-import com.pundroid.bestmoviesapp.utils.DownloadAsyncTask;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.pundroid.bestmoviesapp.objects.Actor;
+import com.pundroid.bestmoviesapp.objects.Credits;
+import com.pundroid.bestmoviesapp.objects.Movie;
+import com.pundroid.bestmoviesapp.utils.RestClient;
 
 import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by pumba30 on 23.08.2015.
  */
-public class CastFragment extends Fragment  {
+public class CastFragment extends Fragment {
 
     private static final String TAG = CastFragment.class.getSimpleName();
+    public static final String API_ENDPOINT = "http://api.themoviedb.org/3";
     public static final String ALL_CAST_ACTORS = "com.pundroid.bestmovieapp.all_cast_actors";
     private static CastFragment instance;
     private ArrayList<Actor> actors = new ArrayList<>();
-  //  private int idMovie;
+    private ListView listView;
 
-    public static  CastFragment newInstance () {
+    //  private int idMovie;
+
+    public static CastFragment newInstance() {
         if (instance == null) {
             instance = new CastFragment();
         }
         return instance;
     }
 
-
-
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        DetailMovieActivity detailMovieActivity = (DetailMovieActivity)activity;
+        DetailMovieActivity detailMovieActivity = (DetailMovieActivity) getActivity();
         Movie movie = detailMovieActivity.movie;
-        int  idMovie = movie.getId();
-        String[] query = new String[]{ALL_CAST_ACTORS, String.valueOf(idMovie)};
-        DownloadAsyncTask task = new DownloadAsyncTask();
-        task.execute(query);
+        int idMovie = movie.getId();
+
+        loadActorByMovieId(idMovie);
 
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+    private void loadActorByMovieId(int idMovie) {
+        //Use RestClient for each request
+        RestClient.get().getActorOfMovie(idMovie, new Callback<Credits>() {
+            @Override
+            public void success(Credits credits, Response response) {
+                actors = credits.getActors();
+                listView.setAdapter(new CastListAdapter(getActivity(), actors));
 
+                if (actors.size() == 0) {
+                    listView.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "Actors loading failed", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d(TAG, "Actors loading failed");
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_tab_cast, container, false);
 
-        ListView listView = (ListView) view.findViewById(R.id.list_cast_actors);
-        listView.setAdapter(new CastListAdapter(getActivity(),
-                actors));
+
+        listView = (ListView) view.findViewById(R.id.list_cast_actors);
 
         Log.d(TAG, "onCreateView");
         return view;
     }
-
-    private  ArrayList<Actor> getActors(String result) throws JSONException {
-        ArrayList<Actor> actors = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(result);
-        JSONArray jsonArray = jsonObject.optJSONArray("cast");
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject actorObject = (JSONObject) jsonArray.get(i);
-
-            Actor actor = new Actor();
-            actor.setCharacterActor(actorObject.optString("character"));
-            actor.setNameActor(actorObject.optString("name"));
-            actor.setPathToImageActor(actorObject.optString("profile_path"));
-            actors.add(actor);
-        }
-        return actors;
-    }
-
 
 
 }
