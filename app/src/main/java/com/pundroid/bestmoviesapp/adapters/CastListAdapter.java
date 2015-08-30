@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.objects.Actor;
+import com.pundroid.bestmoviesapp.utils.RestClient;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
  * Created by pumba30 on 27.08.2015.
  */
 public class CastListAdapter extends BaseAdapter {
-    public static final String BASE_PATH_TO_IMAGE = "http://image.tmdb.org/t/p/w92";
     private Context context;
     private ArrayList<Actor> actors;
 
@@ -65,13 +65,29 @@ public class CastListAdapter extends BaseAdapter {
         Actor actor = actors.get(position);
         if (actor.getProfilePath() != null
                 || actor.getName() != null
-                || actor.getCharacter() != null){
+                || actor.getCharacter() != null) {
             viewHolder.nameActor.setText(actor.getName());
             viewHolder.characterActor.setText(actor.getCharacter());
             String path = actor.getProfilePath();
-            Picasso.with(context).load(BASE_PATH_TO_IMAGE + path).into(viewHolder.imageActor);
+            if (path != null) {
+                resizeImage(viewHolder.imageActor);
+                Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W92 + path)
+                        .into(viewHolder.imageActor);
+            } else {
+                resizeImage(viewHolder.imageActor);
+                viewHolder.imageActor.setImageResource(R.drawable.ic_question_mark);
+            }
+
         }
-            return convertView;
+        return convertView;
+    }
+
+
+
+    private void resizeImage(ImageView imageView) {
+        imageView.getLayoutParams().height = 138;
+        imageView.getLayoutParams().width = 92;
+
     }
 
 

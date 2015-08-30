@@ -16,6 +16,9 @@ public class Credits implements Serializable {
     @SerializedName("cast")
     private ArrayList<Actor> actors;
 
+    @SerializedName("crew")
+    private ArrayList<CrewMember> crew;
+
     public int getId() {
         return id;
     }
@@ -30,5 +33,13 @@ public class Credits implements Serializable {
 
     public void setCast(ArrayList<Actor> actor) {
         this.actors = actor;
+    }
+
+    public ArrayList<CrewMember> getCrew() {
+        return crew;
+    }
+
+    public void setCrew(ArrayList<CrewMember> crew) {
+        this.crew = crew;
     }
 }

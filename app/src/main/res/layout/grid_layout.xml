@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/grid_layout_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -25,14 +26,19 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="0dp"
                 android:horizontalSpacing="0dp"
-                android:verticalSpacing="0dp"
                 android:numColumns="2"
-                android:smoothScrollbar="true">
+                android:smoothScrollbar="true"
+                android:verticalSpacing="0dp">
 
             </GridView>
 
-        </FrameLayout>
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_gravity="center" />
 
+        </FrameLayout>
 
         <!-- Listview to display slider menu -->
         <ListView
@@ -40,20 +46,18 @@
             android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@color/list_background"
+            android:background="@drawable/list_selector"
             android:choiceMode="singleChoice"
             android:divider="@android:color/holo_blue_light"
-            android:dividerHeight="1dp"
-            android:listSelector="@drawable/list_selector" />
+            android:listSelector="@drawable/list_selector" >
 
+    </ListView>
 
     </android.support.v4.widget.DrawerLayout>
 
 
 </LinearLayout>
 
-
- 
 
 
 

@@ -2,20 +2,19 @@ package com.pundroid.bestmoviesapp.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.pundroid.bestmoviesapp.fragments.CastFragment;
 import com.pundroid.bestmoviesapp.fragments.CrewFragment;
 import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
-import com.pundroid.bestmoviesapp.fragments.SimilarMovieFragment;
 
 /**
  * Created by pumba30 on 27.08.2015.
  */
-public class PagerTabSlideAdapter extends FragmentPagerAdapter {
+public class PagerTabSlideAdapter extends FragmentStatePagerAdapter {
 
 
-    private final String[] TITLES = {"Movie", "Cast", "Crew", "Similar movie"};
+    private final String[] TITLES = {"Movie", "Cast", "Crew"};
 
 
     public PagerTabSlideAdapter(FragmentManager fm) {
@@ -31,7 +30,7 @@ public class PagerTabSlideAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return TITLES.length;
     }
 
 
@@ -45,11 +44,11 @@ public class PagerTabSlideAdapter extends FragmentPagerAdapter {
                 return  CastFragment.newInstance();
             case 2:
                 return CrewFragment.newInstance();
-            case 3:
-                return SimilarMovieFragment.newInstance();
         }
         return null;
     }
+
+
 
 
 }

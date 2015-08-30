@@ -11,7 +11,7 @@ import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 public class MainActivity extends ActionBarActivity {
     //https://www.themoviedb.org/talk/55d2cd9192514170bd0004f8
     /**
-     * IMPORTANT: DONT FORGET PLEASE REMOVE YOUR API KEY WHEN SHARING CODE PUBLICALLY!
+     * IMPORTANT: DO NOT FORGET PLEASE REMOVE YOUR API KEY WHEN SHARING CODE PUBLICALLY!
      */
 
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -35,10 +35,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
 
     @Override

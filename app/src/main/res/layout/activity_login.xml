@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pundroid.bestmoviesapp.LoginActivity">
+
+
+    <ImageView
+        android:id="@+id/imageViewLogin"
+        android:layout_width="320dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_logo_tmdb"
+        android:layout_above="@+id/editTextLogin"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="23dp" />
+    <EditText
+        android:id="@+id/editTextLogin"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Input login"
+        android:focusable="true"
+        android:ems="12"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/editTextPassword"
+        android:layout_alignStart="@+id/editTextPassword" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Input password"
+        android:ems="12"
+        android:lines="10"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/editTextLogin"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/btnSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/signIn"
+        android:background="@drawable/button_state_color"
+        android:textColor="@color/list_item_title"
+        android:layout_marginTop="51dp"
+        android:layout_below="@+id/editTextPassword"
+        android:layout_alignLeft="@+id/editTextPassword"
+        android:layout_alignStart="@+id/editTextPassword" />
+
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/signUp"
+        android:layout_gravity="right"
+        android:background="@drawable/button_state_color"
+        android:textColor="@color/list_item_title"
+        android:layout_alignTop="@+id/btnSignIn"
+        android:layout_alignRight="@+id/editTextPassword"
+        android:layout_alignEnd="@+id/editTextPassword" />
+
+</RelativeLayout>

@@ -9,13 +9,13 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
-import com.pundroid.bestmoviesapp.objects.Movie;
+import com.pundroid.bestmoviesapp.fragments.CastFragment;
+import com.pundroid.bestmoviesapp.fragments.CrewFragment;
+import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
+import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 
 public class DetailMovieActivity extends ActionBarActivity {
-    public static final String DATA_ACTORS_STRING = "data_actors_string";
-    public Movie movie;
-    private String dataActorsStr;
-
+    private int movieId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +27,16 @@ public class DetailMovieActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        //передали  объект Movie для дальнейшей обработки
+        //передали  idMovie для дальнейшей обработки
 
-        movie = getIntent().getExtras().getParcelable(Movie.MOVIE_OBJECT);
-        assert movie != null;
-        if (movie.getOriginalTitle() != null) {
-            getSupportActionBar().setTitle(movie.getOriginalTitle());
-        }
+        movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
+        setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
+
+        Bundle args = new Bundle();
+        args.putInt(GridMovieFragment.MOVIE_ID, movieId);
+        DetailMovieActivityFragment.newInstance().setArguments(args);
+        CrewFragment.newInstance().setArguments(args);
+        CastFragment.newInstance().setArguments(args);
 
 
         ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
@@ -44,14 +47,12 @@ public class DetailMovieActivity extends ActionBarActivity {
         pager.setAdapter(movieDetailPagerAdapter);
 
 
-
         // Bind the tabs to the ViewPager
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(pager);
 
 
-
-}
+    }
 
 
     @Override

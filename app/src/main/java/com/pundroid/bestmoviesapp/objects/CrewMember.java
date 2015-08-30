@@ -3,15 +3,22 @@ package com.pundroid.bestmoviesapp.objects;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by pumba30 on 26.08.2015.
- */
-public class Actor {
+import java.io.Serializable;
 
+/**
+ * Created by pumba30 on 28.08.2015.
+ */
+public class CrewMember implements Serializable {
+
+    @SerializedName("credit_id")
     @Expose
-    private String character;
+    private String creditId;
+    @Expose
+    private String department;
     @Expose
     private Long id;
+    @Expose
+    private String job;
     @Expose
     private String name;
     @SerializedName("profile_path")
@@ -21,19 +28,37 @@ public class Actor {
     /**
      *
      * @return
-     * The character
+     * The creditId
      */
-    public String getCharacter() {
-        return character;
+    public String getCreditId() {
+        return creditId;
     }
 
     /**
      *
-     * @param character
-     * The character
+     * @param creditId
+     * The credit_id
      */
-    public void setCharacter(String character) {
-        this.character = character;
+    public void setCreditId(String creditId) {
+        this.creditId = creditId;
+    }
+
+    /**
+     *
+     * @return
+     * The department
+     */
+    public String getDepartment() {
+        return department;
+    }
+
+    /**
+     *
+     * @param department
+     * The department
+     */
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     /**
@@ -52,6 +77,24 @@ public class Actor {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     *
+     * @return
+     * The job
+     */
+    public String getJob() {
+        return job;
+    }
+
+    /**
+     *
+     * @param job
+     * The job
+     */
+    public void setJob(String job) {
+        this.job = job;
     }
 
     /**

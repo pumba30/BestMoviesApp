@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.utils.RestClient;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -17,16 +18,16 @@ import java.util.ArrayList;
 /**
  * Created by pumba30 on 19.08.2015.
  */
-public class ImageGridAdapter extends BaseAdapter {
+public class GridMovieFragmentAdapter extends BaseAdapter {
 
-    private static final String TAG = ImageGridAdapter.class.getSimpleName();
+    private static final String TAG = GridMovieFragmentAdapter.class.getSimpleName();
     private Context context;
     private ArrayList<String> pathToPoster;
 
-    public ImageGridAdapter(Context context, ArrayList<String> pathToPoster) {
+    public GridMovieFragmentAdapter(Context context, ArrayList<String> pathToPoster) {
         this.context = context;
         this.pathToPoster = pathToPoster;
-        Log.d(TAG, "constr ImageGridADApter");
+        Log.d(TAG, "constructor");
     }
 
     @Override
@@ -54,8 +55,6 @@ public class ImageGridAdapter extends BaseAdapter {
             ViewHolder viewHolder = new ViewHolder();
 
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image_item_movie);
-            viewHolder.imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            //viewHolder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             viewHolder.imageView.setAdjustViewBounds(true);
             if (context.getResources()
                     .getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -67,9 +66,9 @@ public class ImageGridAdapter extends BaseAdapter {
 
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
         String poster = pathToPoster.get(position);
-        Picasso.with(context).load(poster).into(viewHolder.imageView);
+        Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W342 + poster).into(viewHolder.imageView);
 
-        Log.d(TAG, poster);
+   //     Log.d(TAG, poster + "\n");
 
         return convertView;
     }

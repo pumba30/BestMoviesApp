@@ -1,6 +1,5 @@
 package com.pundroid.bestmoviesapp.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,21 +11,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.pundroid.bestmoviesapp.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
-import com.pundroid.bestmoviesapp.objects.Movie;
+import com.pundroid.bestmoviesapp.objects.Genres;
+import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.ProductionCompanies;
+import com.pundroid.bestmoviesapp.objects.ProductionCountries;
+import com.pundroid.bestmoviesapp.utils.RestClient;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
-    private Movie movie;
+    private int movieId;
 
 
     private static DetailMovieActivityFragment instance;
-        public static DetailMovieActivityFragment newInstance() {
+
+    public static DetailMovieActivityFragment newInstance() {
         if (instance == null) {
             instance = new DetailMovieActivityFragment();
         }
@@ -38,37 +46,48 @@ public class DetailMovieActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        setRetainInstance(true);
+        Bundle args = getArguments();
+        movieId = args.getInt(GridMovieFragment.MOVIE_ID);
+        downloadMovieDetail(movieId);
 
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        DetailMovieActivity detailMovieActivity = (DetailMovieActivity) activity;
-        movie = detailMovieActivity.movie;
+    private void downloadMovieDetail(int movieId) {
+        RestClient.get().getDetailMovieById(movieId, new Callback<MovieDetail>() {
+            @Override
+            public void success(MovieDetail movieDetail, Response response) {
+                if (movieDetail != null) {
+                    fillLayout(getView(), movieDetail);
+                } else {
+                    Toast.makeText(getActivity(), "Load movie failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d(TAG, "Load movie failed");
+            }
+        });
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
         Log.d(TAG, "onCreateView");
-        fillLayout(view);
-
-
         return view;
     }
 
-    private void fillLayout(View view) {
-       // Movie movie = getArguments().getParcelable(Movie.MOVIE_OBJECT);
+    private void fillLayout(View view, MovieDetail movie) {
         assert movie != null;
-        String pathBackdrop = Movie.BASE_BACKDROP_PATH + movie.getBackdropPath();
+        String pathBackdrop = RestClient.BASE_PATH_TO_IMAGE_W342 + movie.getBackdropPath();
         ImageView imageViewBackDrop = (ImageView) view.findViewById(R.id.image_view_backdrop);
         Picasso.with(getActivity()).load(pathBackdrop).into(imageViewBackDrop);
 
         ImageView imagePoster = (ImageView) view.findViewById(R.id.imageView_poster_w154);
-        String pathPoster = Movie.BASE_POSTER_PATH_W154 + movie.getPosterPath();
+        String pathPoster = RestClient.BASE_PATH_TO_IMAGE_W154 + movie.getPosterPath();
         imagePoster.getLayoutParams().height = 300;
         imagePoster.getLayoutParams().width = 200;
         Picasso.with(getActivity()).load(pathPoster).into(imagePoster);
@@ -77,14 +96,20 @@ public class DetailMovieActivityFragment extends Fragment {
         origTitle.setText(movie.getOriginalTitle());
 
         TextView genre = (TextView) view.findViewById(R.id.tv_genre_title);
-        ArrayList<String> genresList = movie.getGenres();
-        if (genresList == null) {
-            genresList = new ArrayList<>();
-            genresList.add("Nothing found");
+        List<Genres> genresList = movie.getGenres();
+        if (genresList.size() == 0) {
+            genre.setText("Nothing not found");
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (Genres item : genresList) {
+                builder.append(item.getName()).append(" / ");
+            }
+            genre.setText(builder.toString()
+                    .substring(0, builder.toString().length() - 3));//удалим последний слеш
         }
-        genre.setText(getStrings(genresList));
 
-        TextView releaseDate = (TextView) view.findViewById(R.id.tv_release_date_title);
+
+        TextView releaseDate = (TextView) view.findViewById(R.id.tv_release_date_actor);
         releaseDate.setText(movie.getReleaseDate());
 
         TextView voteAverage = (TextView) view.findViewById(R.id.tv_vote_average_title);
@@ -94,51 +119,56 @@ public class DetailMovieActivityFragment extends Fragment {
         voteCount.setText(String.valueOf(movie.getVoteCount()));
 
         TextView tagLine = (TextView) view.findViewById(R.id.tv_tag_line_title);
-        tagLine.setText(movie.getTagLine());
+        if (movie.getTagline() == null || movie.getTagline().equals("")) {
+            tagLine.setText("Nothing not found");
+        }else{
+            tagLine.setText(movie.getTagline());
+        }
+
+
 
         TextView prodComp = (TextView) view.findViewById(R.id.tv_production_companies_description);
-        ArrayList<String> prodCompList = movie.getProductionCompanies();
-        if (prodCompList == null) {
-            prodCompList = new ArrayList<>();
-            prodCompList.add("Nothing found");
+        List<ProductionCompanies> prodCompList = movie.getProductionCompanies();
+        if (prodCompList.size() == 0) {
+            prodComp.setText("Nothing not found");
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (ProductionCompanies companies : prodCompList) {
+                stringBuilder.append(companies.getName()).append(" / ");
+            }
+            prodComp.setText(stringBuilder.toString()
+                    .substring(0, stringBuilder.toString().length() - 3));
         }
-        prodComp.setText(getStrings(prodCompList));
+
 
         TextView prodCountries = (TextView) view.findViewById(R.id.tv_production_countries_description);
-        ArrayList<String> prodCountriesList = movie.getProductionCountries();
-        if (prodCountriesList == null) {
-            prodCountriesList = new ArrayList<>();
-            prodCountriesList.add("Nothing found");
+        List<ProductionCountries> prodCountriesList = movie.getProductionCountries();
+        if (prodCountriesList.size() == 0) {
+            prodCountries.setText("Nothing not found");
+        } else {
+            StringBuilder builderCountries = new StringBuilder();
+            for (ProductionCountries countries : prodCountriesList) {
+                builderCountries.append(countries.getName()).append(" / ");
+            }
+            prodCountries.setText(builderCountries.toString().substring(0, builderCountries.toString().length() - 3));
         }
-        prodCountries.setText(getStrings(prodCountriesList));
+
 
         TextView overview = (TextView) view.findViewById(R.id.tv_overview_title);
         overview.setText(movie.getOverview());
 
         TextView budget = (TextView) view.findViewById(R.id.cell_budget);
-        budget.setText(String.valueOf(movie.getBudget()));
+        budget.setText(String.valueOf(movie.getBudget()) + " $");
 
         TextView runtime = (TextView) view.findViewById(R.id.cell_runtime);
-        runtime.setText(String.valueOf(movie.getRuntime()));
+        runtime.setText(String.valueOf(movie.getRuntime()) + " min");
 
         TextView revenue = (TextView) view.findViewById(R.id.cell_revenue);
         revenue.setText(String.valueOf(movie.getRuntime()));
 
         TextView homePage = (TextView) view.findViewById(R.id.tv_homepage_description);
-        homePage.setText(movie.getHomePage());
+        homePage.setText(movie.getHomepage());
     }
-
-
-    //удалим в строке последний слеш
-    private String getStrings(ArrayList<String> list) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String s : list) {
-            stringBuilder = stringBuilder.append(s + " ");
-        }
-        String s = stringBuilder.toString();
-        return s.substring(0, s.length() - 3);
-    }
-
 
 
     @Override

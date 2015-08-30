@@ -1,20 +1,21 @@
 package com.pundroid.bestmoviesapp.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pundroid.bestmoviesapp.DetailMovieActivity;
+import com.pundroid.bestmoviesapp.BiographyActorActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.CastListAdapter;
 import com.pundroid.bestmoviesapp.objects.Actor;
 import com.pundroid.bestmoviesapp.objects.Credits;
-import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
 import java.util.ArrayList;
@@ -29,13 +30,11 @@ import retrofit.client.Response;
 public class CastFragment extends Fragment {
 
     private static final String TAG = CastFragment.class.getSimpleName();
-    public static final String API_ENDPOINT = "http://api.themoviedb.org/3";
-    public static final String ALL_CAST_ACTORS = "com.pundroid.bestmovieapp.all_cast_actors";
+    public static final String ACTOR_ID = "actor_id";
     private static CastFragment instance;
     private ArrayList<Actor> actors = new ArrayList<>();
     private ListView listView;
 
-    //  private int idMovie;
 
     public static CastFragment newInstance() {
         if (instance == null) {
@@ -48,26 +47,27 @@ public class CastFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        DetailMovieActivity detailMovieActivity = (DetailMovieActivity) getActivity();
-        Movie movie = detailMovieActivity.movie;
-        int idMovie = movie.getId();
+        Bundle args = getArguments();
+        int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
 
-        loadActorByMovieId(idMovie);
+
+        loadActorByMovieId(movieId);
 
     }
 
 
-    private void loadActorByMovieId(int idMovie) {
+    private void loadActorByMovieId(final int idMovie) {
         //Use RestClient for each request
-        RestClient.get().getActorOfMovie(idMovie, new Callback<Credits>() {
+        RestClient.get().getCreditsOfMovie(idMovie, new Callback<Credits>() {
             @Override
             public void success(Credits credits, Response response) {
-                actors = credits.getActors();
-                listView.setAdapter(new CastListAdapter(getActivity(), actors));
-
-                if (actors.size() == 0) {
+                if (credits != null) {
+                    actors = credits.getActors();
+                    listView.setAdapter(new CastListAdapter(getActivity(), actors));
+                } else {
                     listView.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "Actors loading failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Actors loading failed",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -84,8 +84,18 @@ public class CastFragment extends Fragment {
 
 
         listView = (ListView) view.findViewById(R.id.list_cast_actors);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), BiographyActorActivity.class);
+                long actorId = actors.get(position).getId();
+                intent.putExtra(ACTOR_ID, actorId);
+                startActivity(intent);
 
-        Log.d(TAG, "onCreateView");
+            }
+        });
+
+
         return view;
     }
 

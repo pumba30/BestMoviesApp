@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Best Movies App</string>
-
+    <string name="title_activity_login">LoginActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail_movie">DetailMovieActivity</string>
@@ -9,21 +9,22 @@
 
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
-        <item >Home</item>
-        <item >Find People</item>
-        <item >Photos</item>
-        <item >Communities</item>
-        <item >Pages</item>
-        <item >What\'s Hot</item>
+        <item>Top rated movies</item>
+        <item>Popular</item>
+        <item>Upcoming</item>
+        <item>Favorites</item>
+        <item>Watch list</item>
+        <item>Login</item>
     </string-array>
 
     <array name="nav_drawer_icons">
-        <item>@drawable/ic_home</item>
-        <item>@drawable/ic_people</item>
-        <item>@drawable/ic_photos</item>
-        <item>@drawable/ic_communities</item>
-        <item>@drawable/ic_pages</item>
-        <item>@drawable/ic_whats_hot</item>
+        <item>@drawable/ic_top_rated</item>
+        <item>@drawable/ic_popular</item>
+        <item>@drawable/ic_upcoming</item>
+        <item>@drawable/ic_favorites</item>
+        <item>@drawable/ic_watch_list</item>
+        <item>@drawable/ic_login</item>
+
     </array>
 
     <!--name tabs of fragment-->
@@ -31,6 +32,8 @@
     <string name="crew_tab">Crew</string>
     <string name="cast_tab">Cast</string>
     <string name="similar_movie_tab">Similar movie</string>
+
+
 
     <!--name DetailMovieFragment layout-->
     <string name="original_title_header">Original title</string>
@@ -56,6 +59,17 @@
     <string name="revenue">Revenue</string>
     <string name="homepage_header">Homepage</string>
     <string name="homepage_description">Homepage</string>
+
+    <!--name BiographyActorActivity layout -->
+    <string name="title_name_actor">Name</string>
+    <string name="birthday_title">Birthday</string>
+    <string name="deathday_title">Deathday</string>
+    <string name="place_birthday_title">Place Birthday</string>
+    <string name="biography_title">Biograhpy</string>
+    <string name="homepage_actor">Actor homepage</string>
+    <string name="nothing_not_found">Nothing not found</string>
+    <string name="signIn">Sign in</string>
+    <string name="signUp">Sign up</string>
 
 
 </resources>

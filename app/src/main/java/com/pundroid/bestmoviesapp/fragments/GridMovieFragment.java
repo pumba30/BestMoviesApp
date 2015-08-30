@@ -22,45 +22,40 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.pundroid.bestmoviesapp.DetailMovieActivity;
+import com.pundroid.bestmoviesapp.LoginActivity;
 import com.pundroid.bestmoviesapp.R;
-import com.pundroid.bestmoviesapp.adapters.ImageGridAdapter;
+import com.pundroid.bestmoviesapp.adapters.GridMovieFragmentAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
-import com.pundroid.bestmoviesapp.interfaces.AsyncResponse;
-import com.pundroid.bestmoviesapp.objects.Movie;
+import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.slidingmenu.NavDrawerItem;
-import com.pundroid.bestmoviesapp.utils.DataFromJSON;
-import com.pundroid.bestmoviesapp.utils.DownloadAsyncTask;
-
-import org.json.JSONException;
+import com.pundroid.bestmoviesapp.utils.RestClient;
 
 import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by pumba30 on 19.08.2015.
  */
-public class GridMovieFragment extends Fragment implements AsyncResponse {
+public class GridMovieFragment extends Fragment {
     public static final String TAG = GridMovieFragment.class.getSimpleName();
-    public static final String TOP_RATED = "top_rated";
-    private static final String REQUIRED_MOVIE_ID = "required_movie_id";
-    private static final String GET_TOP_RATED_MOVIE = "get_top_rated_movie";
+    public static final String MOVIE_TITLE = "com.pundroid.bestmoviesapp.movie_title";
+    public static String MOVIE_ID = "com.pundroid.bestmoviesapp.movie_id";
     private GridView gridView;
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
     private ActionBarDrawerToggle drawerToggle;
-    private int number_page = 1;
-    private ArrayList<NavDrawerItem> navDrawerItems;
-    private NavDrawerListAdapter navDrawerListAdapter;
-
-    private DataFromJSON dataFromJSON;
-
-    private enum DownloadAction {
-        TOP_RATED_MOVIE, MOVIE_BY_ID
-    }
-
-    private DownloadAction currentAction;
+    private int numPage = 1;
+    private ArrayList<MovieDetail> movieDetails = new ArrayList<>();
+    private String typeMovies = RestClient.TOP_RATED_MOVIES;
+    private ProgressBar progressBar;
 
     public GridMovieFragment() {
 
@@ -76,23 +71,91 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
         // nav drawer icons from resources
         navMenuIcons = getResources()
                 .obtainTypedArray(R.array.nav_drawer_icons);
-        try {
-            dataFromJSON = new DataFromJSON();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        //первый параметр запрос, второй - номер страницы (page)
-        String[] query = new String[]{GET_TOP_RATED_MOVIE, TOP_RATED, String.valueOf(number_page)};
-        toastShowPageNumber();
-        try {
-            updateMovie(query);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (isConnected()) {
+            // сюда передаем различные типы фильмов
+            downloadMovies(numPage, typeMovies);
+            toastShowPageNumber();
+        } else {
+            Toast.makeText(getActivity(),
+                    "Internet connection failed", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void downloadMovies(int numPage, String typeMovies) {
+        progressBar.setVisibility(View.VISIBLE);
+
+        if (typeMovies.equals(RestClient.TOP_RATED_MOVIES)) {
+            RestClient.get().getMoviesByType(numPage, typeMovies,
+                    new Callback<QueryResultMovies>() {
+                        @Override
+                        public void success(QueryResultMovies queryResultMovies, Response response) {
+                            getMoviesByType(queryResultMovies);
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Log.d(TAG, "Download failed");
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+                    });
+        }
+
+        if (typeMovies.equals(RestClient.POPULAR_MOVIES)) {
+            RestClient.get().getPopularMovies(numPage, new Callback<QueryResultMovies>() {
+                @Override
+                public void success(QueryResultMovies queryResultMovies, Response response) {
+                    getMoviesByType(queryResultMovies);
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.d(TAG, "Download failed");
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+
+        if (typeMovies.equals(RestClient.UPCOMING_MOVIES)) {
+            RestClient.get().getUpcomingMovies(numPage, new Callback<QueryResultMovies>() {
+                @Override
+                public void success(QueryResultMovies queryResultMovies, Response response) {
+                    getMoviesByType(queryResultMovies);
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.d(TAG, "Download failed");
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+
+
+    }
+
+    private void getMoviesByType(QueryResultMovies queryResultMovies) {
+        if (queryResultMovies != null) {
+            movieDetails = queryResultMovies.getResults();
+            ArrayList<String> pathPoster = new ArrayList<>();
+            for (MovieDetail item : movieDetails) {
+                pathPoster.add(item.getPosterPath());
+            }
+
+            gridView.setAdapter(new GridMovieFragmentAdapter(getActivity(),
+                    pathPoster));
+        } else {
+            gridView.setVisibility(View.GONE);
+            Toast.makeText(getActivity(), "Poster loading failed",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -101,6 +164,7 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.grid_layout, container, false);
         gridView = (GridView) view.findViewById(R.id.gridViewMovieItem);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         CharSequence drawerTitle;
@@ -109,29 +173,31 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
 
         DrawerLayout drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
         ListView drawerList = (ListView) view.findViewById(R.id.left_drawer);
+        drawerList.setOnItemClickListener(new SlideMenuClickListener());
 
 
-        navDrawerItems = new ArrayList<>();
-        // adding nav drawer items to array
-        // Home
+        ArrayList<NavDrawerItem> navDrawerItems = new ArrayList<>();
+
+        // Top rated movie
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        // Find People
+        // Popular movie
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        // Photos
+        // Upcoming
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
-        // Communities, Will add a counter here
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
-        // Pages
+        // Favorites
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
+        //Watch list
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-        // What's hot, We  will add a counter here
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
+        // Login
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
+
 
         // Recycle the typed array
         navMenuIcons.recycle();
 
         // заполним ListView айтемами
 
-        navDrawerListAdapter = new NavDrawerListAdapter(getActivity(), navDrawerItems);
+        NavDrawerListAdapter navDrawerListAdapter = new NavDrawerListAdapter(getActivity(), navDrawerItems);
         drawerList.setAdapter(navDrawerListAdapter);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
@@ -151,17 +217,15 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                getDownloadMovieDetail(position);
+                int movieId = movieDetails.get(position).getId();
+                String movieTitle = movieDetails.get(position).getTitle();
+                Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
+                intent.putExtra(MOVIE_ID, movieId);
+                intent.putExtra(MOVIE_TITLE, movieTitle);
+                startActivity(intent);
             }
         });
         return view;
-    }
-
-    private void getDownloadMovieDetail(int position) {
-        currentAction = DownloadAction.MOVIE_BY_ID;
-        int movieId = dataFromJSON.getIdMovie(position);
-        String[] query = new String[]{REQUIRED_MOVIE_ID, String.valueOf(movieId)};
-        newDownloadTask(query);
     }
 
 
@@ -180,13 +244,15 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
         // Handle actionbar actions click by arrows
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                number_page++;
-                downloadMoviePoster(number_page);
+                numPage++;
+                downloadMovies(numPage, typeMovies);
+                toastShowPageNumber();
                 return true;
             case R.id.action_back:
-                number_page--;
-                if (number_page <= 0) number_page = 1;
-                downloadMoviePoster(number_page);
+                numPage--;
+                if (numPage <= 0) numPage = 1;
+                downloadMovies(numPage, typeMovies);
+                toastShowPageNumber();
                 return true;
             case R.id.action_search:
                 Log.d(TAG, "SEARCH!");
@@ -197,39 +263,6 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
 
     }
 
-    //загрузим с параметрами query постеры
-    private void downloadMoviePoster(int number_page) {
-        currentAction = DownloadAction.TOP_RATED_MOVIE;
-        String[] query = new String[]{GET_TOP_RATED_MOVIE, TOP_RATED, String.valueOf(number_page)};
-        navDrawerItems.clear();
-        navDrawerListAdapter.notifyDataSetChanged();
-        newDownloadTask(query);
-        toastShowPageNumber();
-    }
-
-    private void toastShowPageNumber() {
-        Toast.makeText(getActivity(), "Page " + String.valueOf(number_page), Toast.LENGTH_SHORT).show();
-    }
-
-    private void newDownloadTask(String[] query) {
-        DownloadAsyncTask task = new DownloadAsyncTask();
-        task.execute(query);
-        task.response = this;
-    }
-
-    //загрузим JSON запрос
-    public void updateMovie(String[] query) throws JSONException {
-        if (isConnected()) {
-            currentAction = DownloadAction.TOP_RATED_MOVIE;
-            //вызов загрузки через параметр:"latest"|"top_rated" - запросы
-            newDownloadTask(query);
-        } else {
-            Toast.makeText(getActivity(),
-                    "You do not have Internet connection", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
     private boolean isConnected() {
         ConnectivityManager manager = (ConnectivityManager) getActivity()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -237,33 +270,47 @@ public class GridMovieFragment extends Fragment implements AsyncResponse {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    @Override
-    public void processFinish(String result) throws JSONException {
+    private void toastShowPageNumber() {
+        Toast.makeText(getActivity(), "Page " + String.valueOf(numPage), Toast.LENGTH_SHORT).show();
+    }
+
+    private class SlideMenuClickListener implements ListView.OnItemClickListener {
 
 
-        switch (currentAction) {
-            case TOP_RATED_MOVIE:
-                try {
-                    dataFromJSON.setMovieJSONString(result);
-                    ArrayList<String> listPathToPoster = dataFromJSON.getPosterPathFromJSON();
-                    gridView.setAdapter(new ImageGridAdapter(getActivity(), listPathToPoster));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case MOVIE_BY_ID:
-                dataFromJSON.setMovieJSONString(result);
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            startAction(position);
+        }
 
-                try {
-                    Movie movie = dataFromJSON.getMovie();
-                    Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
-                    intent.putExtra(Movie.MOVIE_OBJECT, movie);
+        private void startAction(int position) {
+            switch (position) {
+                case 0:
+                    typeMovies = RestClient.TOP_RATED_MOVIES;
+                    downloadMovies(numPage, typeMovies);
+                    break;
+                case 1:
+                    typeMovies = RestClient.POPULAR_MOVIES;
+                    numPage = 1;
+                    downloadMovies(numPage, typeMovies);
+                    break;
+                case 2:
+                    typeMovies = RestClient.UPCOMING_MOVIES;
+                    numPage = 1;
+                    downloadMovies(numPage, typeMovies);
+                    break;
+
+                case 3:
+                    break;
+                case 4:
+                    break;
+
+                case 5:
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
+                    break;
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
+            }
         }
     }
+
 }
