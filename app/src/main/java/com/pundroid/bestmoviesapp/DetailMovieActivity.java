@@ -1,11 +1,13 @@
 package com.pundroid.bestmoviesapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
@@ -15,12 +17,16 @@ import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 
 public class DetailMovieActivity extends ActionBarActivity {
+    private static final String SAVE_CURRENT_MOVE_ID = "current_movie_id";
     private int movieId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVE_CURRENT_MOVE_ID)){
+            movieId = savedInstanceState.getInt(SAVE_CURRENT_MOVE_ID);
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
@@ -29,7 +35,9 @@ public class DetailMovieActivity extends ActionBarActivity {
 
         //передали  idMovie для дальнейшей обработки
 
-        movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
+        movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);  // todo Сохранить
+
+
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
 
         Bundle args = new Bundle();
@@ -58,14 +66,25 @@ public class DetailMovieActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail_movie, menu);
+        getMenuInflater().inflate(R.menu.menu_fragment_detail_movie, menu);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_search_detail_movie) {
+
+            Toast.makeText(getApplicationContext(), "DetailMovieActivuty", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVE_CURRENT_MOVE_ID, movieId);
+    }
 }

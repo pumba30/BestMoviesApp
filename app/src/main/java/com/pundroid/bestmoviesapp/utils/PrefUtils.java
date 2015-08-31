@@ -41,7 +41,7 @@ public class PrefUtils {
         editor.putInt(KEY_SESSION_USER_ID, userID);
         editor.putString(KEY_SESSION_USER_USERNAME, userName);
         editor.putString(KEY_SESSION_ID, session_ID);
-        //editor.putBoolean(KEY_GUEST_BOOLEAN_LABEL, false);
+        editor.putBoolean(KEY_GUEST_BOOLEAN, false);
         editor.apply();
     }
 
@@ -64,7 +64,6 @@ public class PrefUtils {
     }
 
 
-
     public void storeGuestSessionUser(String session_ID) {
         setGuest(true);
 
@@ -73,7 +72,6 @@ public class PrefUtils {
         editor.putString(KEY_GUEST_SESSION_ID, session_ID);
         editor.apply();
     }
-
 
 
 }

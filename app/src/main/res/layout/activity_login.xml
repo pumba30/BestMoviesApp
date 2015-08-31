@@ -30,13 +30,11 @@
         android:id="@+id/editTextPassword"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:inputType="text"
         android:hint="Input password"
-        android:ems="12"
-        android:lines="10"
         android:layout_marginTop="25dp"
         android:layout_below="@+id/editTextLogin"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:inputType="textPassword" />
 
     <Button
         android:id="@+id/btnSignIn"

@@ -70,6 +70,7 @@
     <string name="nothing_not_found">Nothing not found</string>
     <string name="signIn">Sign in</string>
     <string name="signUp">Sign up</string>
+    <string name="title_activity_search">SearchActivity</string>
 
 
 </resources>

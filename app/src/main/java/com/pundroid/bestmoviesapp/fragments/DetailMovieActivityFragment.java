@@ -174,7 +174,8 @@ public class DetailMovieActivityFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_fragment_detail_movie, menu);
+//        inflater.inflate(R.menu.menu_fragment_detail_movie, menu);
+
     }
 
     @Override

@@ -17,10 +17,4 @@
         android:icon="@drawable/ic_forward"
         android:title="Refresh"/>
 
-    <item
-        android:id="@+id/action_search"
-        android:orderInCategory="3"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_search"
-        android:title="Search"/>
 </menu>

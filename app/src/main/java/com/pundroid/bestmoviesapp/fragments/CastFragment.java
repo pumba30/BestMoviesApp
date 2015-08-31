@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -49,12 +52,15 @@ public class CastFragment extends Fragment {
 
         Bundle args = getArguments();
         int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
-
-
         loadActorByMovieId(movieId);
 
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     private void loadActorByMovieId(final int idMovie) {
         //Use RestClient for each request
@@ -94,11 +100,20 @@ public class CastFragment extends Fragment {
 
             }
         });
-
-
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        //inflater.inflate(R.menu.menu_fragment_detail_movie, menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        return super.onOptionsItemSelected(item);
+
+    }
 }
 

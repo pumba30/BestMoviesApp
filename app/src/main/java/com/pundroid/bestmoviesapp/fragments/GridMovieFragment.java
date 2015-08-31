@@ -254,15 +254,11 @@ public class GridMovieFragment extends Fragment {
                 downloadMovies(numPage, typeMovies);
                 toastShowPageNumber();
                 return true;
-            case R.id.action_search:
-                Log.d(TAG, "SEARCH!");
-                Toast.makeText(getActivity(), "SEARCH", Toast.LENGTH_SHORT).show();
-                return true;
         }
         return super.onOptionsItemSelected(item);
 
     }
-
+    //check internet connection
     private boolean isConnected() {
         ConnectivityManager manager = (ConnectivityManager) getActivity()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
