@@ -1,5 +1,6 @@
 package com.pundroid.bestmoviesapp.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -29,8 +30,12 @@ import retrofit.client.Response;
 
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
-    private int movieId;
 
+    // interface for transmission data from this fragment to DetailActivity
+    public interface IDataSendDetailMovie {
+        void onDataSendDetailMovie(MovieDetail movieDetail);
+    }
+    IDataSendDetailMovie sendDetailMovie;
 
     private static DetailMovieActivityFragment instance;
 
@@ -41,14 +46,20 @@ public class DetailMovieActivityFragment extends Fragment {
         return instance;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // init interface
+        sendDetailMovie = (IDataSendDetailMovie) activity;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
+
         Bundle args = getArguments();
-        movieId = args.getInt(GridMovieFragment.MOVIE_ID);
+        int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
         downloadMovieDetail(movieId);
 
     }
@@ -59,6 +70,9 @@ public class DetailMovieActivityFragment extends Fragment {
             public void success(MovieDetail movieDetail, Response response) {
                 if (movieDetail != null) {
                     fillLayout(getView(), movieDetail);
+
+                    //send data to activity
+                    sendDetailMovie.onDataSendDetailMovie(movieDetail);
                 } else {
                     Toast.makeText(getActivity(), "Load movie failed", Toast.LENGTH_SHORT).show();
                 }
@@ -121,10 +135,9 @@ public class DetailMovieActivityFragment extends Fragment {
         TextView tagLine = (TextView) view.findViewById(R.id.tv_tag_line_title);
         if (movie.getTagline() == null || movie.getTagline().equals("")) {
             tagLine.setText("Nothing not found");
-        }else{
+        } else {
             tagLine.setText(movie.getTagline());
         }
-
 
 
         TextView prodComp = (TextView) view.findViewById(R.id.tv_production_companies_description);
@@ -174,7 +187,7 @@ public class DetailMovieActivityFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-//        inflater.inflate(R.menu.menu_fragment_detail_movie, menu);
+        //inflater.inflate(R.menu.menu_detail_movie, menu);
 
     }
 

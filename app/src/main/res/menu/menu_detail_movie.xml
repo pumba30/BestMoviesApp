@@ -2,5 +2,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.pundroid.bestmoviesapp.DetailMovieActivity">
+    <item
+        android:id="@+id/action_share_movie"
+        android:icon="@drawable/ic_share"
+        android:orderInCategory="1"
+        android:title="Share"
+        app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_search_detail_movie"
+        android:icon="@drawable/ic_search"
+        android:orderInCategory="2"
+        android:title="Search"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_add_to_favorites"
+        android:icon="@drawable/ic_favorites"
+        android:orderInCategory="3"
+        android:title="Add to favorites"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_to_watchshlist"
+        android:icon="@drawable/ic_watch_list"
+        android:orderInCategory="4"
+        android:title="Add to watchlist"
+        app:showAsAction="never" />
 </menu>

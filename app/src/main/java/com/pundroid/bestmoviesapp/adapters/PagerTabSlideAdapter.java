@@ -11,16 +11,16 @@ import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 /**
  * Created by pumba30 on 27.08.2015.
  */
-public class PagerTabSlideAdapter extends FragmentStatePagerAdapter {
+public class PagerTabSlideAdapter extends FragmentStatePagerAdapter  {
 
 
+    private static final String TAG = PagerTabSlideAdapter.class.getSimpleName();
     private final String[] TITLES = {"Movie", "Cast", "Crew"};
-
 
     public PagerTabSlideAdapter(FragmentManager fm) {
         super(fm);
-    }
 
+    }
 
     @Override
     public CharSequence getPageTitle(int position) {
@@ -41,7 +41,7 @@ public class PagerTabSlideAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return DetailMovieActivityFragment.newInstance();
             case 1:
-                return  CastFragment.newInstance();
+                return CastFragment.newInstance();
             case 2:
                 return CrewFragment.newInstance();
         }
@@ -49,6 +49,5 @@ public class PagerTabSlideAdapter extends FragmentStatePagerAdapter {
     }
 
 
-
-
 }
+

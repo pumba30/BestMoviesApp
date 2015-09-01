@@ -27,9 +27,10 @@ import retrofit.client.Response;
 /**
  * Created by pumba30 on 23.08.2015.
  */
-public class CrewFragment extends Fragment {
+public class CrewFragment extends Fragment  {
     private static final String TAG = CrewFragment.class.getSimpleName();
     private static CrewFragment instance;
+    private int movieId;
 
     private ListView listViewCrew;
     private ArrayList<CrewMember> crewMembers = new ArrayList<>();
@@ -46,6 +47,7 @@ public class CrewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -93,7 +95,6 @@ public class CrewFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.menu_fragment_detail_movie, menu);
 
     }
 
@@ -103,4 +104,5 @@ public class CrewFragment extends Fragment {
         return super.onOptionsItemSelected(item);
 
     }
+
 }

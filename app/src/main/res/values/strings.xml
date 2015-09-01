@@ -71,6 +71,8 @@
     <string name="signIn">Sign in</string>
     <string name="signUp">Sign up</string>
     <string name="title_activity_search">SearchActivity</string>
+    <string name="search_hint">Find a movie</string>
+    <string name="share_via">Share via</string>
 
 
 </resources>

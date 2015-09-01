@@ -254,6 +254,7 @@ public class GridMovieFragment extends Fragment {
                 downloadMovies(numPage, typeMovies);
                 toastShowPageNumber();
                 return true;
+
         }
         return super.onOptionsItemSelected(item);
 

@@ -84,4 +84,9 @@ public interface API {
 
     @GET("/authentication/guest_session/new" + API_KEY)
     void getGuestSession(Callback<GuestSession> callback);
+
+    // http://api.themoviedb.org/3/search/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&query=MOVIE_NAME
+    @GET("/search/movie" + API_KEY)
+    void searchMovies(@Query("query") String title,
+                      Callback<QueryResultMovies> callback);
 }

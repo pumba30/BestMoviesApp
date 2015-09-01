@@ -37,6 +37,7 @@ public class CastFragment extends Fragment {
     private static CastFragment instance;
     private ArrayList<Actor> actors = new ArrayList<>();
     private ListView listView;
+    private int movieId;
 
 
     public static CastFragment newInstance() {
@@ -46,9 +47,12 @@ public class CastFragment extends Fragment {
         return instance;
     }
 
+
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
 
         Bundle args = getArguments();
         int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
@@ -106,7 +110,7 @@ public class CastFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.menu_fragment_detail_movie, menu);
+
     }
 
     @Override
@@ -115,5 +119,7 @@ public class CastFragment extends Fragment {
         return super.onOptionsItemSelected(item);
 
     }
+
+
 }
 
