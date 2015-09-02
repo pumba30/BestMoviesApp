@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
@@ -18,6 +19,7 @@ import com.pundroid.bestmoviesapp.objects.MovieDetail;
 
 public class DetailMovieActivity extends ActionBarActivity implements DetailMovieActivityFragment.IDataSendDetailMovie {
     private MovieDetail movieDetail;
+    private boolean isLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         // idMovie transferred for further processing
         int movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
+        isLogin = getIntent().getExtras().getBoolean(GridMovieFragment.IS_LOGIN);
 
 
         Bundle args = new Bundle();
@@ -72,6 +75,20 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.action_add_to_favorites) {
+            if (isLogin) {
+                Toast.makeText(getApplicationContext(),
+                        "Add to favorites", Toast.LENGTH_SHORT).show();
+
+                // TODO сделать запрос к API для добавления в лист nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "Please,  login!", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+
         if (item.getItemId() == R.id.action_search_detail_movie) {
             startSearch();
             return true;

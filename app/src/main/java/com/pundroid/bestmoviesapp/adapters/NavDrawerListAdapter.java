@@ -21,10 +21,12 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<NavDrawerItem> navDrawerItems;
+    private boolean login;
 
-    public NavDrawerListAdapter(Context context, ArrayList<NavDrawerItem> navDrawerItems) {
+    public NavDrawerListAdapter(Context context, ArrayList<NavDrawerItem> navDrawerItems, boolean login) {
         this.context = context;
         this.navDrawerItems = navDrawerItems;
+        this.login = login;
     }
 
     @Override
@@ -52,10 +54,18 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
         ImageView imgIcon = (ImageView) convertView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
+        if (!login) {
+            if (position == 4) {
+                txtTitle.setAlpha(0.3f);
+                imgIcon.setAlpha(0.3f);
+            }
+        } else {
+            txtTitle.setAlpha(1f);
+            imgIcon.setAlpha(1f);
+        }
 
         imgIcon.setImageResource(navDrawerItems.get(position).getIcon());
         txtTitle.setText(navDrawerItems.get(position).getTitle());
-
 
 
         return convertView;

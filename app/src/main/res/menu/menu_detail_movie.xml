@@ -21,12 +21,7 @@
         android:icon="@drawable/ic_favorites"
         android:orderInCategory="3"
         android:title="Add to favorites"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 
-    <item
-        android:id="@+id/action_add_to_watchshlist"
-        android:icon="@drawable/ic_watch_list"
-        android:orderInCategory="4"
-        android:title="Add to watchlist"
-        app:showAsAction="never" />
+
 </menu>

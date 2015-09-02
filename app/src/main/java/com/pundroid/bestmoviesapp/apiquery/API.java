@@ -61,16 +61,29 @@ public interface API {
     void getUpcomingMovies(@Query("page") int page,
                            Callback<QueryResultMovies> response);
 
-    //token
+
+    // http://api.themoviedb.org/3/search/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&query=MOVIE_NAME
+    @GET("/search/movie" + API_KEY)
+    void searchMovies(@Query("query") String title,
+                      Callback<QueryResultMovies> callback);
+
+    //********************************************************************************************
+
+    //get token for  request a session id
     @GET("/authentication/token/new" + API_KEY)
     void getToken(Callback<Token> callback);
 
-    //log in
+
+    //log in (receive token)
     @GET("/authentication/token/validate_with_login" + API_KEY)
     void getAuthentication(@Query("request_token") String request_token,
                            @Query("username") String username,
                            @Query("password") String password,
                            Callback<Token> callback);
+
+
+
+
 
     //session
     @GET("/authentication/session/new" + API_KEY)
@@ -85,8 +98,5 @@ public interface API {
     @GET("/authentication/guest_session/new" + API_KEY)
     void getGuestSession(Callback<GuestSession> callback);
 
-    // http://api.themoviedb.org/3/search/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&query=MOVIE_NAME
-    @GET("/search/movie" + API_KEY)
-    void searchMovies(@Query("query") String title,
-                      Callback<QueryResultMovies> callback);
+
 }
