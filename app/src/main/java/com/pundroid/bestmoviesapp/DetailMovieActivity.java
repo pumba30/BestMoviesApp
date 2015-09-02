@@ -81,7 +81,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
                 Toast.makeText(getApplicationContext(),
                         "Add to favorites", Toast.LENGTH_SHORT).show();
 
-                // TODO сделать запрос к API для добавления в лист nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+
             } else {
                 Toast.makeText(getApplicationContext(),
                         "Please,  login!", Toast.LENGTH_SHORT).show();
