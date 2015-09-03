@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.pundroid.bestmoviesapp">
+    package="com.pundroid.bestmoviesapp" >
 
     <!-- This permission is necessary to perform network access. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,60 +15,62 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_clapboard"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".DetailMovieActivity"
             android:label="@string/title_activity_detail_movie"
             android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.pundroid.bestmoviesapp.MainActivity" />
         </activity>
-
         <activity
             android:name=".BiographyActorActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".DetailMovieActivity" />
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.pundroid.bestmoviesapp.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:label="@string/title_activity_search"
+            android:parentActivityName=".DetailMovieActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.pundroid.bestmoviesapp.DetailMovieActivity" />
+        </activity>
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/title_activity_favorites"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.pundroid.bestmoviesapp.MainActivity" />
         </activity>
-
-        <activity
-            android:name=".SearchActivity"
-            android:label="@string/title_activity_search"
-            android:parentActivityName=".DetailMovieActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.pundroid.bestmoviesapp.DetailMovieActivity" />
-
-        </activity>
-
     </application>
 
 </manifest>

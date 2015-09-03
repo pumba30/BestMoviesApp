@@ -35,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+
         //utils class which stores user data (login , session , name)
         utils = PrefUtils.getInstance(getApplicationContext());
 
@@ -120,8 +122,10 @@ public class LoginActivity extends AppCompatActivity {
             public void success(AccountUser accountUser, Response response) {
                 utils.storeSessionUser(accountUser.getId(), accountUser.getUsername(), sessionId);
 
-                startActivity(new Intent(getApplicationContext(), MainActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                startActivity(intent);
 
             }
 

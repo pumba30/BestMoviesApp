@@ -1,17 +1,21 @@
 package com.pundroid.bestmoviesapp.apiquery;
 
+import com.pundroid.bestmoviesapp.objects.AccountState;
 import com.pundroid.bestmoviesapp.objects.AccountUser;
 import com.pundroid.bestmoviesapp.objects.Biography;
 import com.pundroid.bestmoviesapp.objects.Credits;
-import com.pundroid.bestmoviesapp.objects.GuestSession;
+import com.pundroid.bestmoviesapp.objects.Favorite;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.objects.Session;
 import com.pundroid.bestmoviesapp.objects.SimilarMovie;
+import com.pundroid.bestmoviesapp.objects.Status;
 import com.pundroid.bestmoviesapp.objects.Token;
 
 import retrofit.Callback;
+import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -81,10 +85,6 @@ public interface API {
                            @Query("password") String password,
                            Callback<Token> callback);
 
-
-
-
-
     //session
     @GET("/authentication/session/new" + API_KEY)
     void getSession(@Query("request_token") String request_token,
@@ -95,8 +95,28 @@ public interface API {
     void getAccount(@Query("session_id") String session,
                     Callback<AccountUser> callback);
 
-    @GET("/authentication/guest_session/new" + API_KEY)
-    void getGuestSession(Callback<GuestSession> callback);
 
+    //addToFavorites List
+
+    //Check if current film is added to favorite/watchlist
+    @GET("/movie/{id}/account_states" + API_KEY)
+    void getAccountStates(@Path("id") int movie_id,
+                          @Query("session_id") String session,
+                          Callback<AccountState> callback);
+
+
+    //add/remove from favorite
+    @POST("/account/{id}/favorite" + API_KEY)
+    void addMovieToFavorites(@Path("id") int id,
+                             @Query("session_id") String session,
+                             @Body Favorite favorite,
+                             Callback<Status> callback);
+
+    //get all favorite movies
+    @GET("/account/{id}/favorite/movies" + API_KEY)
+    void getFavoritesMovies(@Path("id") int id,
+                            @Query("session_id") String session,
+                            @Query("page") int page,
+                            Callback<QueryResultMovies> callback);
 
 }

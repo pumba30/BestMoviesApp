@@ -1,10 +1,13 @@
 package com.pundroid.bestmoviesapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -15,16 +18,31 @@ import com.pundroid.bestmoviesapp.fragments.CastFragment;
 import com.pundroid.bestmoviesapp.fragments.CrewFragment;
 import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
+import com.pundroid.bestmoviesapp.objects.AccountState;
+import com.pundroid.bestmoviesapp.objects.Favorite;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.Status;
+import com.pundroid.bestmoviesapp.utils.PrefUtils;
+import com.pundroid.bestmoviesapp.utils.RestClient;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class DetailMovieActivity extends ActionBarActivity implements DetailMovieActivityFragment.IDataSendDetailMovie {
+    private static final String TAG = DetailMovieActivity.class.getSimpleName();
     private MovieDetail movieDetail;
     private boolean isLogin;
+    private int movieId;
+    private String sessionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
+        SharedPreferences preferences = getApplicationContext()
+                .getSharedPreferences(PrefUtils.KEY_SHARED_PREF, Context.MODE_PRIVATE);
+        sessionId = preferences.getString(PrefUtils.KEY_SESSION_ID, null);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
 
@@ -36,11 +54,13 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
 
         // idMovie transferred for further processing
-        int movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
+
+        movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
         isLogin = getIntent().getExtras().getBoolean(GridMovieFragment.IS_LOGIN);
 
 
+        // TODO: 02.09.2015 возможно эти 2 строчки не надо
         Bundle args = new Bundle();
         args.putInt(GridMovieFragment.MOVIE_ID, movieId);
 
@@ -80,7 +100,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
             if (isLogin) {
                 Toast.makeText(getApplicationContext(),
                         "Add to favorites", Toast.LENGTH_SHORT).show();
-
+                checkIsAddedToFavorList(movieId, sessionId);
 
             } else {
                 Toast.makeText(getApplicationContext(),
@@ -99,6 +119,42 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkIsAddedToFavorList(final int movieId, final String sessionId) {
+        RestClient.get().getAccountStates(movieId, sessionId, new Callback<AccountState>() {
+            @Override
+            public void success(AccountState accountState, Response response) {
+                if (!accountState.isFavorite()) {
+                   // boolean isFavorite = accountState.isFavorite();
+                    addMovieToFavorite(movieId, sessionId);
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "The film has already been added", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d(TAG, "Movie Added fail");
+            }
+        });
+    }
+
+    private void addMovieToFavorite(int movieId, String sessionId) {
+        RestClient.get().addMovieToFavorites(movieId, sessionId,
+                new Favorite("movie", movieId, true), new Callback<Status>() {
+                    @Override
+                    public void success(Status status, Response response) {
+                        Toast.makeText(getApplicationContext(),
+                                "Successful added to favorites", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.d(TAG, "An error occurred while adding movie to  favorites");
+                    }
+                });
     }
 
     private void startSearch() {
@@ -131,5 +187,6 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     public void onDataSendDetailMovie(MovieDetail movieDetail) {
         this.movieDetail = movieDetail;
     }
+
 
 }

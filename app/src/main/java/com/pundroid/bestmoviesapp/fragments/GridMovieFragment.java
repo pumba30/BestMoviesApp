@@ -29,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.pundroid.bestmoviesapp.DetailMovieActivity;
+import com.pundroid.bestmoviesapp.FavoritesActivity;
 import com.pundroid.bestmoviesapp.LoginActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.GridMovieFragmentAdapter;
@@ -63,6 +64,7 @@ public class GridMovieFragment extends Fragment {
     private ProgressBar progressBar;
     private String userName = " guest!";
     private boolean isLogin;
+    private DrawerLayout drawerLayout;
 
     public GridMovieFragment() {
 
@@ -75,7 +77,7 @@ public class GridMovieFragment extends Fragment {
 
         SharedPreferences preferences = getActivity()
                 .getSharedPreferences(PrefUtils.KEY_SHARED_PREF, Context.MODE_PRIVATE);
-        isLogin = preferences.getBoolean(PrefUtils.KEY_USER_IN_ACCOUNT, false);
+        isLogin = preferences.getBoolean(PrefUtils.KEY_USER_IS_IN_ACCOUNT, false);
 
         if (isLogin) {
             userName = " " + preferences.getString(PrefUtils.KEY_SESSION_USER_USERNAME, " guest!") + "!";
@@ -187,7 +189,8 @@ public class GridMovieFragment extends Fragment {
         CharSequence title = drawerTitle = activity.getTitle();
 
 
-        DrawerLayout drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
+
+        drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
         ListView drawerList = (ListView) view.findViewById(R.id.left_drawer);
         drawerList.setOnItemClickListener(new SlideMenuClickListener());
 
@@ -202,7 +205,7 @@ public class GridMovieFragment extends Fragment {
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
         // Upcoming
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
-        // Favorites
+        // Favorite
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
         // Login
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
@@ -297,10 +300,10 @@ public class GridMovieFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            startAction(position, view);
+            startAction(position);
         }
 
-        private void startAction(int position, View view) {
+        private void startAction(int position) {
             switch (position) {
                 case 1:
                     typeMovies = RestClient.TOP_RATED_MOVIES;
@@ -322,7 +325,9 @@ public class GridMovieFragment extends Fragment {
                         Toast.makeText(getActivity(), "Please,  login!", Toast.LENGTH_SHORT).show();
 
                     } else {
-                        Toast.makeText(getActivity(), "Enabled", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), FavoritesActivity.class);
+                        startActivity(intent);
+                        drawerLayout.closeDrawers();
                     }
                     break;
                 case 5:
