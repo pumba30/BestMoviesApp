@@ -19,6 +19,7 @@ public class RestClient {
     public static final String BASE_PATH_TO_IMAGE_W154 = "http://image.tmdb.org/t/p/w154";
     public static final String BASE_PATH_TO_IMAGE_W92 = "http://image.tmdb.org/t/p/w92";
     public static final String BASE_PATH_TO_IMAGE_W342 = "http://image.tmdb.org/t/p/w342";
+    public static final String BASE_PATH_TO_IMAGE_W780 = "http://image.tmdb.org/t/p/w780";
     public static final String TOP_RATED_MOVIES = "top_rated";
     public static final String POPULAR_MOVIES = "popular";
     public static final String UPCOMING_MOVIES = "upcoming";

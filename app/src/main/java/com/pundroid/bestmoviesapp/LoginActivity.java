@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etLogin;
     private EditText etPass;
     private String sessionId;
+    private int userId;
 
     PrefUtils utils;
 
@@ -121,6 +122,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void success(AccountUser accountUser, Response response) {
                 utils.storeSessionUser(accountUser.getId(), accountUser.getUsername(), sessionId);
+
+                userId = accountUser.getId();
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

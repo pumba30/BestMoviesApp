@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pundroid.bestmoviesapp.MainActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.objects.Genres;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
@@ -35,8 +36,8 @@ public class DetailMovieActivityFragment extends Fragment {
     public interface IDataSendDetailMovie {
         void onDataSendDetailMovie(MovieDetail movieDetail);
     }
-    IDataSendDetailMovie sendDetailMovie;
 
+    IDataSendDetailMovie sendDetailMovie;
     private static DetailMovieActivityFragment instance;
 
     public static DetailMovieActivityFragment newInstance() {
@@ -96,9 +97,17 @@ public class DetailMovieActivityFragment extends Fragment {
 
     private void fillLayout(View view, MovieDetail movie) {
         assert movie != null;
-        String pathBackdrop = RestClient.BASE_PATH_TO_IMAGE_W342 + movie.getBackdropPath();
+
+        // if use a tablet, download large size image
+        String pathBackdrop;
+        if (MainActivity.isLarge) {
+            pathBackdrop = RestClient.BASE_PATH_TO_IMAGE_W780 + movie.getBackdropPath();
+        } else {
+            pathBackdrop = RestClient.BASE_PATH_TO_IMAGE_W342 + movie.getBackdropPath();
+        }
         ImageView imageViewBackDrop = (ImageView) view.findViewById(R.id.image_view_backdrop);
         Picasso.with(getActivity()).load(pathBackdrop).into(imageViewBackDrop);
+
 
         ImageView imagePoster = (ImageView) view.findViewById(R.id.imageView_poster_w154);
         String pathPoster = RestClient.BASE_PATH_TO_IMAGE_W154 + movie.getPosterPath();

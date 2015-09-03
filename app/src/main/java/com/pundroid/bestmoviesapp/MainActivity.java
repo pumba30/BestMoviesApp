@@ -1,6 +1,7 @@
 package com.pundroid.bestmoviesapp;
 
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -16,17 +17,21 @@ public class MainActivity extends ActionBarActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String TAG_GRID_MOVIE_FRAGMENT = "gridMovieFragment";
-    GridMovieFragment gridMovieFragment;
+
+
+    private boolean isTabletModeDetermined = false;
+    private boolean isTabletMode = false;
+    public static  boolean isLarge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // hideStatusBar();
         setContentView(R.layout.activity_main);
 
+        isLarge = isTablet(getApplicationContext());
 
 
-        gridMovieFragment = new GridMovieFragment();
+        GridMovieFragment gridMovieFragment = new GridMovieFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container_lin_lay, gridMovieFragment)
                 .addToBackStack(TAG_GRID_MOVIE_FRAGMENT)
@@ -35,7 +40,14 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-
+    private boolean isTablet(Context context) {
+        if (!isTabletModeDetermined) {
+            if (context.getResources().getConfiguration().smallestScreenWidthDp >= 600)
+                isTabletMode = true;
+            isTabletModeDetermined = true;
+        }
+        return isTabletMode;
+    }
 
 
     @Override
@@ -47,13 +59,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-
-        @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
 }

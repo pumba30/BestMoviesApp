@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +30,7 @@ import android.widget.Toast;
 import com.pundroid.bestmoviesapp.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.FavoritesActivity;
 import com.pundroid.bestmoviesapp.LoginActivity;
+import com.pundroid.bestmoviesapp.MainActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.GridMovieFragmentAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
@@ -181,10 +181,17 @@ public class GridMovieFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.grid_layout, container, false);
-        gridView = (GridView) view.findViewById(R.id.gridViewMovieItem);
+
+        MainActivity activity = (MainActivity) getActivity();
+        if(!activity.isLarge){
+            gridView = (GridView) view.findViewById(R.id.gridViewMovieItem);
+        }else{
+            gridView = (GridView)view.findViewById(R.id.gridViewMovieItem_large);
+        }
+
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        //AppCompatActivity activity = (AppCompatActivity) getActivity();
         CharSequence drawerTitle;
         CharSequence title = drawerTitle = activity.getTitle();
 
@@ -242,7 +249,7 @@ public class GridMovieFragment extends Fragment {
                 int movieId = movieDetails.get(position).getId();
                 String movieTitle = movieDetails.get(position).getTitle();
                 Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
-                intent.putExtra(IS_LOGIN, isLogin);
+               // intent.putExtra(IS_LOGIN, isLogin);
                 intent.putExtra(MOVIE_ID, movieId);
                 intent.putExtra(MOVIE_TITLE, movieTitle);
                 startActivity(intent);
@@ -308,16 +315,19 @@ public class GridMovieFragment extends Fragment {
                 case 1:
                     typeMovies = RestClient.TOP_RATED_MOVIES;
                     downloadMovies(numPage, typeMovies);
+                    drawerLayout.closeDrawers();
                     break;
                 case 2:
                     typeMovies = RestClient.POPULAR_MOVIES;
                     numPage = 1;
                     downloadMovies(numPage, typeMovies);
+                    drawerLayout.closeDrawers();
                     break;
                 case 3:
                     typeMovies = RestClient.UPCOMING_MOVIES;
                     numPage = 1;
                     downloadMovies(numPage, typeMovies);
+                    drawerLayout.closeDrawers();
                     break;
 
                 case 4:
@@ -333,6 +343,7 @@ public class GridMovieFragment extends Fragment {
                 case 5:
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
+                    drawerLayout.closeDrawers();
                     break;
                 case 6:
                     startAbout();

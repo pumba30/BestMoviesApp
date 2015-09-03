@@ -18,6 +18,7 @@ import com.pundroid.bestmoviesapp.adapters.SearchMovieAdapter;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
+import com.pundroid.bestmoviesapp.utils.PrefUtils;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = SearchActivity.class.getSimpleName();
     private ListView listViewSearch;
     private ArrayList<MovieDetail> movieDetails = new ArrayList<>();
+
 
 
 

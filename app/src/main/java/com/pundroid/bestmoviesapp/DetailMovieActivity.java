@@ -31,23 +31,27 @@ import retrofit.client.Response;
 
 public class DetailMovieActivity extends ActionBarActivity implements DetailMovieActivityFragment.IDataSendDetailMovie {
     private static final String TAG = DetailMovieActivity.class.getSimpleName();
+    public static final String KEY_IS_LOGIN = "com.pundroid.bestmoviesapp.key_is_login";
     private MovieDetail movieDetail;
     private boolean isLogin;
     private int movieId;
     private String sessionId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
+
+
         SharedPreferences preferences = getApplicationContext()
                 .getSharedPreferences(PrefUtils.KEY_SHARED_PREF, Context.MODE_PRIVATE);
         sessionId = preferences.getString(PrefUtils.KEY_SESSION_ID, null);
+        isLogin = preferences.getBoolean(PrefUtils.KEY_USER_IS_IN_ACCOUNT, false);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
 
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -57,10 +61,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
         movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
-        isLogin = getIntent().getExtras().getBoolean(GridMovieFragment.IS_LOGIN);
 
-
-        // TODO: 02.09.2015 возможно эти 2 строчки не надо
         Bundle args = new Bundle();
         args.putInt(GridMovieFragment.MOVIE_ID, movieId);
 
@@ -68,8 +69,6 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
         PagerTabSlideAdapter movieDetailPagerAdapter
                 = new PagerTabSlideAdapter(getSupportFragmentManager());
-
-
         pager.setAdapter(movieDetailPagerAdapter);
 
 
@@ -80,16 +79,19 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         DetailMovieActivityFragment.newInstance().setArguments(args);
         CrewFragment.newInstance().setArguments(args);
         CastFragment.newInstance().setArguments(args);
-
-
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "On SaveInstanceState");
+        outState.putBoolean(KEY_IS_LOGIN, isLogin);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_detail_movie, menu);
-
         return true;
     }
 
@@ -126,7 +128,6 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
             @Override
             public void success(AccountState accountState, Response response) {
                 if (!accountState.isFavorite()) {
-                   // boolean isFavorite = accountState.isFavorite();
                     addMovieToFavorite(movieId, sessionId);
                 } else {
                     Toast.makeText(getApplicationContext(),

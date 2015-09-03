@@ -1,12 +1,12 @@
 package com.pundroid.bestmoviesapp.adapters;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.pundroid.bestmoviesapp.R;
@@ -55,20 +55,21 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
             ViewHolder viewHolder = new ViewHolder();
 
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image_item_movie);
+            viewHolder.gridViewLarge = (GridView) parent.findViewById(R.id.gridViewMovieItem_large);
             viewHolder.imageView.setAdjustViewBounds(true);
-            if (context.getResources()
-                    .getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                viewHolder.imageView.setRotation(90f);
-            }
             convertView.setTag(viewHolder);
         }
 
 
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
         String poster = pathToPoster.get(position);
-        Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W342 + poster).into(viewHolder.imageView);
 
-   //     Log.d(TAG, poster + "\n");
+        // if use a tablet, download large size image
+        if (viewHolder.gridViewLarge != null) {
+            Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W780 + poster).into(viewHolder.imageView);
+        } else {
+            Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W342 + poster).into(viewHolder.imageView);
+        }
 
         return convertView;
     }
@@ -76,6 +77,7 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         public ImageView imageView;
+        public GridView gridViewLarge;
     }
 
 
