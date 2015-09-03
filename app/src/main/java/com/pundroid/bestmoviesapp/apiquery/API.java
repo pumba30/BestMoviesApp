@@ -23,50 +23,50 @@ import retrofit.http.Query;
  * Created by pumba30 on 27.08.2015.
  */
 public interface API {
-    public static final String API_KEY = "?api_key=d1a2f8dc42f6388052172df57a6aba41";
+    public static final String API_KEY = "";
 
-    // http://api.themoviedb.org/3/movie/135397/credits?api_key=d1a2f8dc42f6388052172df57a6aba41
+    // http://api.themoviedb.org/3/movie/135397/credits?api_key=API_KEY
     @GET("/movie/{idMovie}/credits" + API_KEY)
     void getCreditsOfMovie(@Path("idMovie") int idMovie,
                            Callback<Credits> response);
 
 
-    // http://api.themoviedb.org/3/person/20750?api_key=d1a2f8dc42f6388052172df57a6aba41
+    // http://api.themoviedb.org/3/person/20750?api_key=API_KEY
     @GET("/person/{idPerson}" + API_KEY)
     void getBiographyPerson(@Path("idPerson") int idPerson,
                             Callback<Biography> response);
 
     // /movie/{id}/similar
-    // http://api.themoviedb.org/3/movie/135397/similar?api_key=d1a2f8dc42f6388052172df57a6aba41
+    // http://api.themoviedb.org/3/movie/135397/similar?api_key=API_KEY
     @GET("/movie/{idMovie}/similar" + API_KEY)
     void getSimilarMovie(@Path("idMovie") int idMovie,
                          Callback<SimilarMovie> response);
 
-    // http://api.themoviedb.org/3/discover/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&page=1&query=top_rated
+    // http://api.themoviedb.org/3/discover/movie?api_key=API_KEY&page=1&query=top_rated
     @GET("/discover/movie" + API_KEY)
     void getMoviesByType(@Query("page") int page,
                          @Query("query") String typeMovies,
                          Callback<QueryResultMovies> response);
 
     // get movie by id
-    // http://api.themoviedb.org/3/movie/13539?api_key=d1a2f8dc42f6388052172df57a6aba41
+    // http://api.themoviedb.org/3/movie/13539?api_key=API_KEY
     @GET("/movie/{idMovie}" + API_KEY)
     void getDetailMovieById(@Path("idMovie") int idMovie,
                             Callback<MovieDetail> response);
 
     // /movie/popular
-    // http://api.themoviedb.org/3/movie/popular?api_key=d1a2f8dc42f6388052172df57a6aba41
+    // http://api.themoviedb.org/3/movie/popular?api_key=API_KEY
     @GET("/movie/top_rated" + API_KEY)
     void getPopularMovies(@Query("page") int page,
                           Callback<QueryResultMovies> response);
 
-    // http://api.themoviedb.org/3/movie/upcoming?api_key=d1a2f8dc42f6388052172df57a6aba41
+    // http://api.themoviedb.org/3/movie/upcoming?api_key=API_KEY
     @GET("/movie/upcoming" + API_KEY)
     void getUpcomingMovies(@Query("page") int page,
                            Callback<QueryResultMovies> response);
 
 
-    // http://api.themoviedb.org/3/search/movie?api_key=d1a2f8dc42f6388052172df57a6aba41&query=MOVIE_NAME
+    // http://api.themoviedb.org/3/search/movie?api_key=API_KEY&query=MOVIE_NAME
     @GET("/search/movie" + API_KEY)
     void searchMovies(@Query("query") String title,
                       Callback<QueryResultMovies> callback);

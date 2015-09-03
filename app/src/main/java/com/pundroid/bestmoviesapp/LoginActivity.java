@@ -27,9 +27,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etLogin;
     private EditText etPass;
     private String sessionId;
-    private int userId;
 
-    PrefUtils utils;
+    private PrefUtils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,14 +121,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void success(AccountUser accountUser, Response response) {
                 utils.storeSessionUser(accountUser.getId(), accountUser.getUsername(), sessionId);
-
-                userId = accountUser.getId();
-
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(intent);
-
             }
 
             @Override
@@ -142,16 +137,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

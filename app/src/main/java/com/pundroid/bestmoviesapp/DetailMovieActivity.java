@@ -164,6 +164,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         finish();
     }
 
+    // share title of movies and overview
     private void startShare() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");

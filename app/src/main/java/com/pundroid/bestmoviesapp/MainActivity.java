@@ -10,13 +10,12 @@ import android.view.MenuItem;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 
 public class MainActivity extends ActionBarActivity {
-    //https://www.themoviedb.org/talk/55d2cd9192514170bd0004f8
     /**
      * IMPORTANT: DO NOT FORGET PLEASE REMOVE YOUR API KEY WHEN SHARING CODE PUBLICALLY!
      */
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    public static final String TAG_GRID_MOVIE_FRAGMENT = "gridMovieFragment";
+    public static final String TAG_GRID_MOVIE_FRAGMENT = "com.pundroid.bestmoviesapp.gridMovieFragment";
 
 
     private boolean isTabletModeDetermined = false;
@@ -52,7 +51,6 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         return true;
