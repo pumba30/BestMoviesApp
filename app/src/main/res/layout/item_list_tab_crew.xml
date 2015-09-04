@@ -9,8 +9,7 @@
         android:id="@+id/imageView_memberCrew"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:src="@drawable/actor_w92" />
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -25,7 +24,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:text="Shon Connery"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textStyle="bold" />
 

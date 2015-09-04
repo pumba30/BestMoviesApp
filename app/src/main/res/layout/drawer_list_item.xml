@@ -12,7 +12,6 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:src="@drawable/ic_login"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:scaleX="1.25"

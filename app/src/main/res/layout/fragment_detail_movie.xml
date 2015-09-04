@@ -19,8 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                  android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/backdrop" />
+                android:scaleType="fitXY" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,8 +39,7 @@
                 <ImageView
                     android:id="@+id/imageView_poster_w154"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/poster_w154" />
+                    android:layout_height="wrap_content"/>
 
                 <RatingBar
                     android:id="@+id/ratingBarPopularity"
@@ -71,8 +69,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:text="@string/original_title"/>
+                    android:textStyle="bold"/>
 
 
                 <TextView
@@ -89,8 +86,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:text="@string/genre_title"/>
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_releasedate_header"
@@ -106,8 +102,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:text="@string/release_date_title"/>
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_vote_average_header"
@@ -123,8 +118,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:text="@string/vote_average_title"/>
+                    android:textStyle="bold"/>
 
 
                 <TextView
@@ -143,7 +137,6 @@
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:text="@string/vote_count_title"
                     android:elegantTextHeight="true"
                     android:singleLine="false" />
 
@@ -174,8 +167,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:text="@string/tag_line_title"/>
+                android:textStyle="bold"/>
 
 
             <TextView
@@ -193,8 +185,7 @@
                 android:paddingLeft="4dp"
                 android:paddingBottom="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:text="@string/overview_title"/>
+                android:textStyle="bold"/>
         </LinearLayout>
 
 
@@ -220,8 +211,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:text="@string/production_companies_description"/>
+                android:textStyle="bold"/>
 
 
             <TextView
@@ -239,8 +229,7 @@
                 android:paddingLeft="4dp"
                 android:paddingBottom="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:text="@string/production_countries_description"/>
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <TableLayout
@@ -269,20 +258,17 @@
             <TableRow android:weightSum="3">
                 <TextView
                     android:id="@+id/cell_budget"
-                    android:text="@string/budget"
                     android:textStyle="bold"
                     android:padding="4dp"
                     android:layout_weight="1"/>
                 <TextView
                     android:id="@+id/cell_runtime"
                     android:textStyle="bold"
-                    android:text="@string/runtime"
                     android:padding="4dp"
                     android:layout_weight="1"/>
                 <TextView
                     android:id="@+id/cell_revenue"
                     android:textStyle="bold"
-                    android:text="@string/revenue"
                     android:padding="4dp"
                     android:layout_weight="1"/>
 
@@ -313,7 +299,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="16dp"
-            android:text="@string/homepage_description"
             android:autoLink="web"
             android:clickable="true"/>
     </LinearLayout>

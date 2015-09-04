@@ -25,8 +25,7 @@
             <ImageView
                 android:id="@+id/imageView_poster_actor_w154"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/poster_w154"/>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -50,7 +49,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
-                android:text="@string/nothing_not_found"
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
@@ -69,7 +67,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
-                android:text="@string/nothing_not_found"
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
@@ -89,7 +86,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
-                android:text="@string/nothing_not_found"
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
@@ -111,7 +107,6 @@
                 android:paddingBottom="4dp"
                 android:paddingLeft="4dp"
                 android:singleLine="false"
-                android:text="@string/nothing_not_found"
                 android:textColor="@color/black"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -139,7 +134,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            android:text="@string/nothing_not_found"
             android:textColor="@color/black"
             android:textStyle="bold" />
 
@@ -167,7 +161,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="16dp"
-            android:text="@string/nothing_not_found"
             android:autoLink="web"
             android:clickable="true"/>
     </LinearLayout>
