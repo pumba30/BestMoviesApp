@@ -23,7 +23,7 @@ import retrofit.http.Query;
  * Created by pumba30 on 27.08.2015.
  */
 public interface API {
-    public static final String API_KEY = "";
+    public static final String API_KEY = "?api_key=d1a2f8dc42f6388052172df57a6aba41";
 
     // http://api.themoviedb.org/3/movie/135397/credits?api_key=API_KEY
     @GET("/movie/{idMovie}/credits" + API_KEY)

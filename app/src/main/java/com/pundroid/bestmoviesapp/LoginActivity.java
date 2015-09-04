@@ -3,6 +3,7 @@ package com.pundroid.bestmoviesapp;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.objects.AccountUser;
 import com.pundroid.bestmoviesapp.objects.Session;
 import com.pundroid.bestmoviesapp.objects.Token;
@@ -27,14 +30,22 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etLogin;
     private EditText etPass;
     private String sessionId;
-
+    private AdView adView;
     private PrefUtils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        // Google Ads
+        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(android_id)
+                .setRequestAgent("android_studio:ad_template").build();
+        adView.loadAd(adRequest);
+        //********
 
 
         //utils class which stores user data (login , session , name)
@@ -154,4 +165,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
+    }
 }

@@ -2,6 +2,7 @@ package com.pundroid.bestmoviesapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -14,11 +15,12 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.adapters.SearchMovieAdapter;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
-import com.pundroid.bestmoviesapp.utils.PrefUtils;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = SearchActivity.class.getSimpleName();
     private ListView listViewSearch;
     private ArrayList<MovieDetail> movieDetails = new ArrayList<>();
-
+    private AdView adView;
 
 
 
@@ -40,6 +42,17 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        // Google Ads
+        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(android_id)
+                .setRequestAgent("android_studio:ad_template").build();
+        adView.loadAd(adRequest);
+        //********
+
         // hide keyboard after pressing the button to search
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -128,5 +141,31 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 }

@@ -2,6 +2,7 @@ package com.pundroid.bestmoviesapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -10,6 +11,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.fragments.CastFragment;
 import com.pundroid.bestmoviesapp.objects.Biography;
 import com.pundroid.bestmoviesapp.utils.RestClient;
@@ -29,13 +32,14 @@ public class BiographyActorActivity extends ActionBarActivity {
     private ScrollView scrollView;
     private int idPerson;
 
-    TextView nameActor;
-    TextView birthday;
-    TextView deathday;
-    TextView placeBirthday;
-    TextView biographyAct;
-    TextView homepage;
-    ImageView actorImage;
+    private TextView nameActor;
+    private TextView birthday;
+    private TextView deathday;
+    private TextView placeBirthday;
+    private TextView biographyAct;
+    private TextView homepage;
+    private ImageView actorImage;
+    private AdView adView;
 
 
     @Override
@@ -43,7 +47,17 @@ public class BiographyActorActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actor_biography_fragment);
 
-        // scrollView = (ScrollView) findViewById(R.id.scrollView_actor_fragment);
+        // Google Ads
+        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(android_id)
+                .setRequestAgent("android_studio:ad_template").build();
+        adView.loadAd(adRequest);
+        //********
+
+
         nameActor = (TextView) findViewById(R.id.tv_name_actor);
         birthday = (TextView) findViewById(R.id.tv_birthday);
         deathday = (TextView) findViewById(R.id.tv_deathday);
@@ -137,6 +151,33 @@ public class BiographyActorActivity extends ActionBarActivity {
             homepage.setText(R.string.nothing_not_found);
         }
 
+    }
+
+
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 
 }

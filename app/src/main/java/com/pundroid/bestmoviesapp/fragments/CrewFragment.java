@@ -1,6 +1,7 @@
 package com.pundroid.bestmoviesapp.fragments;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.CrewListAdapter;
 import com.pundroid.bestmoviesapp.objects.Credits;
@@ -31,6 +34,7 @@ public class CrewFragment extends Fragment  {
     private static final String TAG = CrewFragment.class.getSimpleName();
     private static CrewFragment instance;
     private int movieId;
+    private AdView adView;
 
     private ListView listViewCrew;
     private ArrayList<CrewMember> crewMembers = new ArrayList<>();
@@ -87,6 +91,17 @@ public class CrewFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_detail_tab_crew, container, false);
+
+        // Google Ads
+        String android_id = Settings.Secure.getString(getActivity().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        adView = (AdView) view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(android_id)
+                .setRequestAgent("android_studio:ad_template").build();
+        adView.loadAd(adRequest);
+        //********
+
         listViewCrew = (ListView) view.findViewById(R.id.list_crew_movie);
 
         return view;
@@ -103,6 +118,32 @@ public class CrewFragment extends Fragment  {
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 
 }

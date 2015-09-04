@@ -2,6 +2,7 @@ package com.pundroid.bestmoviesapp.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.MainActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.objects.Genres;
@@ -31,11 +34,13 @@ import retrofit.client.Response;
 
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
+    private AdView adView;
 
     // interface for transmission data from this fragment to DetailActivity
     public interface IDataSendDetailMovie {
         void onDataSendDetailMovie(MovieDetail movieDetail);
     }
+
 
     IDataSendDetailMovie sendDetailMovie;
     private static DetailMovieActivityFragment instance;
@@ -91,6 +96,17 @@ public class DetailMovieActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+
+        // Google Ads
+        String android_id = Settings.Secure.getString(getActivity().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        adView = (AdView) view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(android_id)
+                .setRequestAgent("android_studio:ad_template").build();
+        adView.loadAd(adRequest);
+        //********
+
         Log.d(TAG, "onCreateView");
         return view;
     }
@@ -207,5 +223,31 @@ public class DetailMovieActivityFragment extends Fragment {
 
     }
 
+
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
+    }
 
 }

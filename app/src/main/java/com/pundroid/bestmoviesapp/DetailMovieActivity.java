@@ -37,7 +37,6 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     private int movieId;
     private String sessionId;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +57,6 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
 
         // idMovie transferred for further processing
-
         movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
 
@@ -189,6 +187,5 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     public void onDataSendDetailMovie(MovieDetail movieDetail) {
         this.movieDetail = movieDetail;
     }
-
 
 }
