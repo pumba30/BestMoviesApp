@@ -2,7 +2,6 @@ package com.pundroid.bestmoviesapp.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -98,12 +97,9 @@ public class DetailMovieActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
         // Google Ads
-        String android_id = Settings.Secure.getString(getActivity().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
         adView = (AdView) view.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(android_id)
-                .setRequestAgent("android_studio:ad_template").build();
+                .setRequestAgent("adMob").build();
         adView.loadAd(adRequest);
         //********
 

@@ -2,7 +2,6 @@ package com.pundroid.bestmoviesapp.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,11 +56,9 @@ public class CastFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
         Bundle args = getArguments();
         int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
         loadActorByMovieId(movieId);
-
     }
 
     @Override
@@ -97,12 +94,9 @@ public class CastFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail_tab_cast, container, false);
 
         // Google Ads
-        String android_id = Settings.Secure.getString(getActivity().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
         adView = (AdView) view.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(android_id)
-                .setRequestAgent("android_studio:ad_template").build();
+                .setRequestAgent("adMob").build();
         adView.loadAd(adRequest);
         //********
 
@@ -123,14 +117,11 @@ public class CastFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         return super.onOptionsItemSelected(item);
-
     }
 
     @Override
