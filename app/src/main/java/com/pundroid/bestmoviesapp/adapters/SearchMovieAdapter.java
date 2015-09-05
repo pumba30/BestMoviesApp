@@ -65,7 +65,7 @@ public class SearchMovieAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-       //получим детали описания фильма и заполним item ListView
+       // get the details description of the film and fill item ListView
         MovieDetail movie = result.get(position);
 
         viewHolder.textViewSearch.setText(movie.getTitle());
