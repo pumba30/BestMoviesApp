@@ -1,6 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView_detail_movie"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,67 +9,69 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_margin="8dp"
+        android:orientation="vertical"
         android:weightSum="1">
 
 
-             <ImageView
-                android:id="@+id/image_view_backdrop"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                 android:adjustViewBounds="true"
-                android:scaleType="fitXY" />
+        <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
+            android:id="@+id/image_view_backdrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="275dp"
             android:layout_marginTop="8dp"
-            android:paddingBottom="12dp"
             android:background="@color/light_green"
+            android:baselineAligned="false"
             android:orientation="horizontal"
-            android:baselineAligned="false">
+            android:paddingBottom="12dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_margin="4dp">
+                android:layout_margin="4dp"
+                android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/imageView_poster_w154"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
                 <RatingBar
                     android:id="@+id/ratingBarPopularity"
+                    style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?android:attr/ratingBarStyleSmall"/>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:layout_marginLeft="4dp"
+                android:layout_weight="6.50"
 
-                android:layout_weight="6.50">
+                android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/tv_original_title_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
-                    android:textColor="@color/light_gray"
-                    android:text="@string/original_title_header"/>
+                    android:text="@string/original_title_header"
+                    android:textColor="@color/light_gray" />
+
                 <TextView
                     android:id="@+id/tv_original_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
 
                 <TextView
@@ -78,15 +80,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:paddingLeft="4dp"
-                    android:textColor="@color/light_gray"
-                    android:text="@string/genre_header"/>
+                    android:text="@string/genre_header"
+                    android:textColor="@color/light_gray" />
+
                 <TextView
                     android:id="@+id/tv_genre_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_releasedate_header"
@@ -94,15 +97,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:paddingLeft="4dp"
-                    android:textColor="@color/light_gray"
-                    android:text="@string/releasedate_header"/>
+                    android:text="@string/releasedate_header"
+                    android:textColor="@color/light_gray" />
+
                 <TextView
                     android:id="@+id/tv_release_date_actor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_vote_average_header"
@@ -110,15 +114,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:paddingLeft="4dp"
-                    android:textColor="@color/light_gray"
-                    android:text="@string/vote_average__header"/>
+                    android:text="@string/vote_average__header"
+                    android:textColor="@color/light_gray" />
+
                 <TextView
                     android:id="@+id/tv_vote_average_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
 
                 <TextView
@@ -127,18 +132,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:paddingLeft="4dp"
-                    android:textColor="@color/light_gray"
-                    android:text="@string/vote_count__header"/>
+                    android:text="@string/vote_count__header"
+                    android:textColor="@color/light_gray" />
+
                 <TextView
                     android:id="@+id/tv_vote_count_header_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:elegantTextHeight="true"
                     android:paddingBottom="4dp"
                     android:paddingLeft="4dp"
+                    android:singleLine="false"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:elegantTextHeight="true"
-                    android:singleLine="false" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -148,8 +154,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
+            android:layout_marginTop="8dp"
             android:background="@color/light_green"
             android:orientation="vertical">
 
@@ -159,15 +165,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:paddingLeft="4dp"
-                android:textColor="@color/light_gray"
-                android:text="@string/tag_line_header"/>
+                android:text="@string/tag_line_header"
+                android:textColor="@color/light_gray" />
+
             <TextView
                 android:id="@+id/tv_tag_line_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
 
             <TextView
@@ -176,24 +183,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:paddingLeft="4dp"
-                android:textColor="@color/light_gray"
-                android:text="@string/overview_header"/>
+                android:text="@string/overview_header"
+                android:textColor="@color/light_gray" />
+
             <TextView
                 android:id="@+id/tv_overview_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="4dp"
                 android:paddingBottom="4dp"
+                android:paddingLeft="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
             android:background="@color/light_green"
             android:orientation="vertical">
 
@@ -203,15 +211,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:paddingLeft="4dp"
-                android:textColor="@color/light_gray"
-                android:text="@string/production_companies_header"/>
+                android:text="@string/production_companies_header"
+                android:textColor="@color/light_gray" />
+
             <TextView
                 android:id="@+id/tv_production_companies_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
 
             <TextView
@@ -220,16 +229,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:paddingLeft="4dp"
-                android:textColor="@color/light_gray"
-                android:text="@string/production_countries_header"/>
+                android:text="@string/production_countries_header"
+                android:textColor="@color/light_gray" />
+
             <TextView
                 android:id="@+id/tv_production_countries_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="4dp"
                 android:paddingBottom="4dp"
+                android:paddingLeft="4dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TableLayout
@@ -241,75 +251,85 @@
             android:shrinkColumns="true">
 
             <TableRow android:weightSum="3">
+
                 <TextView
-                    android:text="@string/budget"
+                    android:layout_weight="1"
                     android:padding="4dp"
-                    android:layout_weight="1"/>
+                    android:text="@string/budget" />
+
                 <TextView
-                    android:text="@string/runtime"
+                    android:layout_weight="1"
                     android:padding="4dp"
-                    android:layout_weight="1"/>
+                    android:text="@string/runtime" />
+
                 <TextView
-                    android:text="@string/revenue"
+                    android:layout_weight="1"
                     android:padding="4dp"
-                    android:layout_weight="1"/>
+                    android:text="@string/revenue" />
 
             </TableRow>
+
             <TableRow android:weightSum="3">
+
                 <TextView
                     android:id="@+id/cell_budget"
-                    android:textStyle="bold"
+                    android:layout_weight="1"
                     android:padding="4dp"
-                    android:layout_weight="1"/>
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/cell_runtime"
-                    android:textStyle="bold"
+                    android:layout_weight="1"
                     android:padding="4dp"
-                    android:layout_weight="1"/>
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/cell_revenue"
-                    android:textStyle="bold"
+                    android:layout_weight="1"
                     android:padding="4dp"
-                    android:layout_weight="1"/>
+                    android:textStyle="bold" />
 
             </TableRow>
 
         </TableLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/light_green"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/tv_homepage_header"
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="4dp"
-            android:paddingLeft="4dp"
-            android:textColor="@color/light_gray"
-            android:text="@string/homepage_header"/>
-        <TextView
-            android:id="@+id/tv_homepage_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:paddingBottom="4dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textSize="16dp"
-            android:autoLink="web"
-            android:clickable="true"/>
-    </LinearLayout>
+            android:background="@color/light_green"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_homepage_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:paddingLeft="4dp"
+                android:text="@string/homepage_header"
+                android:textColor="@color/light_gray" />
+
+            <TextView
+                android:id="@+id/tv_homepage_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:clickable="true"
+                android:paddingBottom="4dp"
+                android:paddingLeft="4dp"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
         <!-- view for AdMob Banner Ad -->
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             ads:adSize="BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id"
-            android:layout_marginBottom="24dp"/>
+            ads:adUnitId="@string/banner_ad_unit_id" />
     </LinearLayout>
 
 
