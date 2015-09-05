@@ -11,3 +11,7 @@ Used Picasso, Retrofit, Okhttp, PlayServicesAds.
 ![screenshot_4](https://cloud.githubusercontent.com/assets/8355604/9694728/e4f133c6-5363-11e5-81a3-a3e2acbef0a8.png)
 ![screenshot_4](https://cloud.githubusercontent.com/assets/8355604/9694831/f1c1e7de-5364-11e5-8c60-7803075dba36.png)
 ![screenshot_4](https://cloud.githubusercontent.com/assets/8355604/9694832/f1db20be-5364-11e5-8528-bebbd5b10f76.png)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/pumba30/bestmoviesapp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
