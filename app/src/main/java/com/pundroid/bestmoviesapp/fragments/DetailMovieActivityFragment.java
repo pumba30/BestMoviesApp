@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.pundroid.bestmoviesapp.MainActivity;
+import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.objects.Genres;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;

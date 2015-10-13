@@ -70,6 +70,8 @@ public interface API {
     @GET("/search/movie" + API_KEY)
     void searchMovies(@Query("query") String title,
                       Callback<QueryResultMovies> callback);
+    // http://image.tmdb.org/t/p/w342/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg
+
 
     //********************************************************************************************
 

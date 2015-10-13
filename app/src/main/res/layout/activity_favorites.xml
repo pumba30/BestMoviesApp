@@ -5,7 +5,7 @@
     android:id="@+id/container_fragment_favorites"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.pundroid.bestmoviesapp.FavoritesActivity">
+    tools:context="com.pundroid.bestmoviesapp.activity.FavoritesActivity">
 
     <include
         android:id="@+id/include_toolbar_favor"

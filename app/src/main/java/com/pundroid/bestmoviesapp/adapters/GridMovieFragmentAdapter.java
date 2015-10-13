@@ -13,7 +13,7 @@ import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pumba30 on 19.08.2015.
@@ -22,9 +22,9 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
 
     private static final String TAG = GridMovieFragmentAdapter.class.getSimpleName();
     private Context context;
-    private ArrayList<String> pathToPoster;
+    private List<String> pathToPoster;
 
-    public GridMovieFragmentAdapter(Context context, ArrayList<String> pathToPoster) {
+    public GridMovieFragmentAdapter(Context context, List<String> pathToPoster) {
         this.context = context;
         this.pathToPoster = pathToPoster;
         Log.d(TAG, "constructor");

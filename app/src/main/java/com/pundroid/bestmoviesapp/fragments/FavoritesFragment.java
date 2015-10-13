@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pundroid.bestmoviesapp.DetailMovieActivity;
+import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.SearchMovieAdapter;
 import com.pundroid.bestmoviesapp.objects.Favorite;

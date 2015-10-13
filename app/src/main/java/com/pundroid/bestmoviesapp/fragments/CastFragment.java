@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.pundroid.bestmoviesapp.BiographyActorActivity;
+import com.pundroid.bestmoviesapp.activity.BiographyActorActivity;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.CastListAdapter;
 import com.pundroid.bestmoviesapp.objects.Actor;

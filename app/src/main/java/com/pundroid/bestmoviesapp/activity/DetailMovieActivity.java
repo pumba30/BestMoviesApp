@@ -1,10 +1,11 @@
-package com.pundroid.bestmoviesapp;
+package com.pundroid.bestmoviesapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
 import com.pundroid.bestmoviesapp.fragments.CastFragment;
 import com.pundroid.bestmoviesapp.fragments.CrewFragment;
@@ -49,11 +51,14 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         isLogin = preferences.getBoolean(PrefUtils.KEY_USER_IS_IN_ACCOUNT, false);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled((true));
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
 
         // idMovie transferred for further processing

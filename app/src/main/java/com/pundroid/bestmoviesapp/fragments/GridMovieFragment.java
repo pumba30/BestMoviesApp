@@ -6,8 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -27,20 +30,31 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.pundroid.bestmoviesapp.DetailMovieActivity;
-import com.pundroid.bestmoviesapp.FavoritesActivity;
-import com.pundroid.bestmoviesapp.LoginActivity;
-import com.pundroid.bestmoviesapp.MainActivity;
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
+import com.pundroid.bestmoviesapp.activity.FavoritesActivity;
+import com.pundroid.bestmoviesapp.activity.LoginActivity;
+import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.adapters.GridMovieFragmentAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
+import com.pundroid.bestmoviesapp.databases.DataModel.Poster;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.slidingmenu.NavDrawerItem;
 import com.pundroid.bestmoviesapp.utils.PrefUtils;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -114,6 +128,7 @@ public class GridMovieFragment extends Fragment {
                         @Override
                         public void success(QueryResultMovies queryResultMovies, Response response) {
                             getMoviesByType(queryResultMovies);
+
                             progressBar.setVisibility(View.INVISIBLE);
                         }
 
@@ -163,10 +178,20 @@ public class GridMovieFragment extends Fragment {
     private void getMoviesByType(QueryResultMovies queryResultMovies) {
         if (queryResultMovies != null) {
             movieDetails = queryResultMovies.getResults();
-            ArrayList<String> pathPoster = new ArrayList<>();
+            List<String> pathPoster = new ArrayList<>();
+            List<Poster> posters = new ArrayList<>();
+
             for (MovieDetail item : movieDetails) {
                 pathPoster.add(item.getPosterPath());
+                Poster poster = new Poster(item.getId(), item.getPosterPath());
+                Log.d(TAG, "item get poster_path " + poster.getMovieId());
+                posters.add(poster);
             }
+
+            //Check this
+            AsyncTask asyncTask = new DownloadPoster(posters);
+            asyncTask.execute();
+
 
             gridView.setAdapter(new GridMovieFragmentAdapter(getActivity(),
                     pathPoster));
@@ -177,16 +202,74 @@ public class GridMovieFragment extends Fragment {
         }
     }
 
+    private class DownloadPoster extends AsyncTask<List<Poster>, Void, Long> {
+
+        private List<Poster> posters;
+        private Bitmap bitmap;
+
+        public DownloadPoster(List<Poster> posters) {
+            this.posters = posters;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final Long doInBackground(List<Poster>... params) {
+            Log.d(TAG, "doInBackground");
+
+            for (Poster poster : posters) {
+                File file = new File(getActivity().getCacheDir(), String.valueOf(poster.getMovieId()) + ".png");
+                OutputStream outputStream;
+                if (file.exists()) {
+                    bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    return 0L;
+                }
+
+                try {
+                    file.createNewFile();
+                    URL urlPoster = new URL(RestClient.BASE_PATH_TO_IMAGE_W342 + poster.getPathToPoster());
+                    URLConnection connection = urlPoster.openConnection();
+                    connection.connect();
+
+                    InputStream inputStream = connection.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    outputStream = new BufferedOutputStream(new FileOutputStream(file));
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                    return 0L;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    return 1L;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return 1L;
+                }
+            }
+            return 1L;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            if (aLong == 0) {
+                Log.d(TAG, "Failed to save");
+            } else {
+                Log.d(TAG, "Done!");
+            }
+
+
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.grid_layout, container, false);
 
         MainActivity activity = (MainActivity) getActivity();
-        if(!activity.isLarge){
+        if (!activity.isLarge) {
             gridView = (GridView) view.findViewById(R.id.gridViewMovieItem);
-        }else{
-            gridView = (GridView)view.findViewById(R.id.gridViewMovieItem_large);
+        } else {
+            gridView = (GridView) view.findViewById(R.id.gridViewMovieItem_large);
         }
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -194,7 +277,6 @@ public class GridMovieFragment extends Fragment {
         //AppCompatActivity activity = (AppCompatActivity) getActivity();
         CharSequence drawerTitle;
         CharSequence title = drawerTitle = activity.getTitle();
-
 
 
         drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
@@ -249,7 +331,7 @@ public class GridMovieFragment extends Fragment {
                 int movieId = movieDetails.get(position).getId();
                 String movieTitle = movieDetails.get(position).getTitle();
                 Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
-               // intent.putExtra(IS_LOGIN, isLogin);
+                // intent.putExtra(IS_LOGIN, isLogin);
                 intent.putExtra(MOVIE_ID, movieId);
                 intent.putExtra(MOVIE_TITLE, movieTitle);
                 startActivity(intent);
@@ -356,7 +438,7 @@ public class GridMovieFragment extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("About")
                     .setCancelable(false)
-                    .setView(R.layout.about)
+                    .setView(R.layout.alertdialog_about)
                     .setPositiveButton("Close",
                             new DialogInterface.OnClickListener() {
                                 @Override

@@ -1,4 +1,4 @@
-package com.pundroid.bestmoviesapp;
+package com.pundroid.bestmoviesapp.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +16,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.SearchMovieAdapter;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;

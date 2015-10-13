@@ -1,4 +1,4 @@
-package com.pundroid.bestmoviesapp;
+package com.pundroid.bestmoviesapp.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.fragments.FavoritesFragment;
 
 public class FavoritesActivity extends ActionBarActivity {

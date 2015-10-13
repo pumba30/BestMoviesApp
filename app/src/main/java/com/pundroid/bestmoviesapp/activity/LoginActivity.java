@@ -1,4 +1,4 @@
-package com.pundroid.bestmoviesapp;
+package com.pundroid.bestmoviesapp.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.objects.AccountUser;
 import com.pundroid.bestmoviesapp.objects.Session;
 import com.pundroid.bestmoviesapp.objects.Token;

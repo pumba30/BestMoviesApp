@@ -1,4 +1,4 @@
-package com.pundroid.bestmoviesapp;
+package com.pundroid.bestmoviesapp.activity;
 
 import android.app.FragmentManager;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 
 public class MainActivity extends ActionBarActivity {
@@ -18,6 +19,7 @@ public class MainActivity extends ActionBarActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String TAG_GRID_MOVIE_FRAGMENT = "com.pundroid.bestmoviesapp.gridMovieFragment";
+    public static final String AD_MOB = "adMob";
     private AdView adView;
     private boolean isTabletModeDetermined = false;
     private boolean isTabletMode = false;
@@ -31,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
         // Google Ads
         adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .setRequestAgent("adMob").build();
+                .setRequestAgent(AD_MOB).build();
         adView.loadAd(adRequest);
         //********
 
