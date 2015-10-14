@@ -20,17 +20,17 @@ import java.util.ArrayList;
  */
 public class CrewListAdapter extends BaseAdapter {
 
-    private Context context;
-    private ArrayList<CrewMember> crewMembers;
+    private Context mContext;
+    private ArrayList<CrewMember> mCrewMembers;
 
     public CrewListAdapter(Context context, ArrayList<CrewMember> crewMembers) {
-        this.context = context;
-        this.crewMembers = crewMembers;
+        this.mContext = context;
+        this.mCrewMembers = crewMembers;
     }
 
     @Override
     public int getCount() {
-        return crewMembers.size();
+        return mCrewMembers.size();
     }
 
     @Override
@@ -40,43 +40,41 @@ public class CrewListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return crewMembers.indexOf(position);
+        return mCrewMembers.indexOf(position);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(R.layout.item_list_tab_crew, parent, false);
 
-
             viewHolder = new ViewHolder();
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView_memberCrew);
-            viewHolder.nameMember = (TextView) convertView.findViewById(R.id.name_memberCrew_describe);
-            viewHolder.nameJob = (TextView) convertView.findViewById(R.id.job_memberCrew_describe);
+            viewHolder.mImageView = (ImageView) convertView.findViewById(R.id.imageView_memberCrew);
+            viewHolder.mTextView = (TextView) convertView.findViewById(R.id.name_memberCrew_describe);
+            viewHolder.mNameJob = (TextView) convertView.findViewById(R.id.job_memberCrew_describe);
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        CrewMember crewMember = crewMembers.get(position);
+        CrewMember crewMember = mCrewMembers.get(position);
         if (crewMember.getProfilePath() != null
                 || crewMember.getName() != null
                 || crewMember.getJob() != null) {
-            viewHolder.nameMember.setText(crewMember.getName());
-            viewHolder.nameJob.setText(crewMember.getJob());
+            viewHolder.mTextView.setText(crewMember.getName());
+            viewHolder.mNameJob.setText(crewMember.getJob());
             String path = crewMember.getProfilePath();
             if (path != null) {
-                resizeImage(viewHolder.imageView);
-                Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W92
-                        + path).into(viewHolder.imageView);
+                resizeImage(viewHolder.mImageView);
+                Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W92
+                        + path).into(viewHolder.mImageView);
             } else {
-                resizeImage(viewHolder.imageView);
-                viewHolder.imageView.setImageResource(R.drawable.ic_question_mark);
+                resizeImage(viewHolder.mImageView);
+                viewHolder.mImageView.setImageResource(R.drawable.ic_question_mark);
             }
-
         }
         return convertView;
     }
@@ -88,8 +86,8 @@ public class CrewListAdapter extends BaseAdapter {
 
 
     static class ViewHolder {
-        ImageView imageView;
-        TextView nameMember;
-        TextView nameJob;
+        ImageView mImageView;
+        TextView mTextView;
+        TextView mNameJob;
     }
 }

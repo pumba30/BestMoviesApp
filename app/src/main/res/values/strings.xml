@@ -83,6 +83,23 @@
         For more information, see https://support.google.com/admob/answer/3052638
     <!- -->
     <string name="banner_ad_unit_id">ca-app-pub-6095509140691405/6662418777</string>
+    <string name="guest">" guest!"</string>
+    <string name="internet_connection_failed">Internet connection failed</string>
+    <string name="search">Search</string>
+    <string name="poster_loading_failed">Poster loading failed</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="please_login">Please,  login!</string>
+    <string name="film_added">The film has already been added</string>
+    <string name="added_fail">Movie Added fail</string>
+    <string name="download_failed">Download failed</string>
+    <string name="about">About</string>
+
+    <!-- -->
+    <array name="titles_pager_tab">
+        <item>Movie</item>
+        <item>Cast</item>
+        <item>Crew</item>
+    </array>
 
 
 </resources>

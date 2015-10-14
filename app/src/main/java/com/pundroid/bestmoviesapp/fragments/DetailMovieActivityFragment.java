@@ -112,7 +112,7 @@ public class DetailMovieActivityFragment extends Fragment {
 
         // if use a tablet, download large size image
         String pathBackdrop;
-        if (MainActivity.isLarge) {
+        if (MainActivity.sIsLarge) {
             pathBackdrop = RestClient.BASE_PATH_TO_IMAGE_W780 + movie.getBackdropPath();
         } else {
             pathBackdrop = RestClient.BASE_PATH_TO_IMAGE_W342 + movie.getBackdropPath();

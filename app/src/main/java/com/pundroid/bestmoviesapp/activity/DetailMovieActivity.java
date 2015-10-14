@@ -34,10 +34,10 @@ import retrofit.client.Response;
 public class DetailMovieActivity extends ActionBarActivity implements DetailMovieActivityFragment.IDataSendDetailMovie {
     private static final String TAG = DetailMovieActivity.class.getSimpleName();
     public static final String KEY_IS_LOGIN = "com.pundroid.bestmoviesapp.key_is_login";
-    private MovieDetail movieDetail;
-    private boolean isLogin;
-    private int movieId;
-    private String sessionId;
+    private MovieDetail mMovieDetail;
+    private boolean mIsLogin;
+    private int mMovieId;
+    private String mSessionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +47,8 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
         SharedPreferences preferences = getApplicationContext()
                 .getSharedPreferences(PrefUtils.KEY_SHARED_PREF, Context.MODE_PRIVATE);
-        sessionId = preferences.getString(PrefUtils.KEY_SESSION_ID, null);
-        isLogin = preferences.getBoolean(PrefUtils.KEY_USER_IS_IN_ACCOUNT, false);
+        mSessionId = preferences.getString(PrefUtils.KEY_SESSION_ID, null);
+        mIsLogin = preferences.getBoolean(PrefUtils.KEY_USER_IS_IN_ACCOUNT, false);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
@@ -62,18 +62,16 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
 
         // idMovie transferred for further processing
-        movieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
+        mMovieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
 
         Bundle args = new Bundle();
-        args.putInt(GridMovieFragment.MOVIE_ID, movieId);
-
+        args.putInt(GridMovieFragment.MOVIE_ID, mMovieId);
 
         ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
         PagerTabSlideAdapter movieDetailPagerAdapter
-                = new PagerTabSlideAdapter(getSupportFragmentManager());
+                = new PagerTabSlideAdapter(getSupportFragmentManager(), getApplicationContext());
         pager.setAdapter(movieDetailPagerAdapter);
-
 
         // Bind the tabs to the ViewPager
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -88,7 +86,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     protected void onRestoreInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Log.d(TAG, "On SaveInstanceState");
-        outState.putBoolean(KEY_IS_LOGIN, isLogin);
+        outState.putBoolean(KEY_IS_LOGIN, mIsLogin);
     }
 
     @Override
@@ -102,14 +100,14 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.action_add_to_favorites) {
-            if (isLogin) {
+            if (mIsLogin) {
                 Toast.makeText(getApplicationContext(),
-                        "Add to favorites", Toast.LENGTH_SHORT).show();
-                checkIsAddedToFavorList(movieId, sessionId);
+                        R.string.add_to_favorites, Toast.LENGTH_SHORT).show();
+                checkIsAddedToFavorList(mMovieId, mSessionId);
 
             } else {
                 Toast.makeText(getApplicationContext(),
-                        "Please,  login!", Toast.LENGTH_SHORT).show();
+                        R.string.please_login, Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -134,13 +132,13 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
                     addMovieToFavorite(movieId, sessionId);
                 } else {
                     Toast.makeText(getApplicationContext(),
-                            "The film has already been added", Toast.LENGTH_SHORT).show();
+                            R.string.film_added, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Log.d(TAG, "Movie Added fail");
+                Log.d(TAG, getString(R.string.added_fail));
             }
         });
     }
@@ -172,8 +170,8 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
 
-        String title = movieDetail.getTitle();
-        String overview = movieDetail.getOverview();
+        String title = mMovieDetail.getTitle();
+        String overview = mMovieDetail.getOverview();
         StringBuilder stringBuilder = new StringBuilder();
 
         String res = stringBuilder.append(title)
@@ -190,7 +188,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     // get data from fragment
     @Override
     public void onDataSendDetailMovie(MovieDetail movieDetail) {
-        this.movieDetail = movieDetail;
+        this.mMovieDetail = movieDetail;
     }
 
 }

@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,18 +28,15 @@ public class BiographyActorActivity extends ActionBarActivity {
 
     private static final String TAG = BiographyActorActivity.class.getSimpleName();
 
-    private ScrollView scrollView;
-    private int idPerson;
 
-    private TextView nameActor;
-    private TextView birthday;
-    private TextView deathday;
-    private TextView placeBirthday;
-    private TextView biographyAct;
-    private TextView homepage;
-    private ImageView actorImage;
-    private AdView adView;
-
+    private TextView namNameActoreActor;
+    private TextView mBirthday;
+    private TextView mDeathday;
+    private TextView mPlaceBirthday;
+    private TextView mBiographyAct;
+    private TextView mHomepage;
+    private ImageView mActorimage;
+    private AdView mAdView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,23 +44,22 @@ public class BiographyActorActivity extends ActionBarActivity {
         setContentView(R.layout.actor_biography_fragment);
 
         // Google Ads
-        adView = (AdView) findViewById(R.id.adView);
+        mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent("adMob").build();
-        adView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);
         //********
 
-
-        nameActor = (TextView) findViewById(R.id.tv_name_actor);
-        birthday = (TextView) findViewById(R.id.tv_birthday);
-        deathday = (TextView) findViewById(R.id.tv_deathday);
-        placeBirthday = (TextView) findViewById(R.id.tv_place_birthday);
-        biographyAct = (TextView) findViewById(R.id.tv_biography_desc);
-        homepage = (TextView) findViewById(R.id.tv_homepage_actor_description);
-        actorImage = (ImageView) findViewById(R.id.imageView_poster_actor_w154);
+        namNameActoreActor = (TextView) findViewById(R.id.tv_name_actor);
+        mBirthday = (TextView) findViewById(R.id.tv_birthday);
+        mDeathday = (TextView) findViewById(R.id.tv_deathday);
+        mPlaceBirthday = (TextView) findViewById(R.id.tv_place_birthday);
+        mBiographyAct = (TextView) findViewById(R.id.tv_biography_desc);
+        mHomepage = (TextView) findViewById(R.id.tv_homepage_actor_description);
+        mActorimage = (ImageView) findViewById(R.id.imageView_poster_actor_w154);
 
         Intent intent = getIntent();
-        idPerson = (int) intent.getLongExtra(CastFragment.ACTOR_ID, 0);
+        int idPerson = (int) intent.getLongExtra(CastFragment.ACTOR_ID, 0);
         loadBiographyActor(idPerson);
 
     }
@@ -93,59 +88,59 @@ public class BiographyActorActivity extends ActionBarActivity {
 
 
         if (biography.getProfilePath() != null) {
-            actorImage.getLayoutParams().height = 300;
-            actorImage.getLayoutParams().width = 200;
+            mActorimage.getLayoutParams().height = 300;
+            mActorimage.getLayoutParams().width = 200;
             Picasso.with(getApplicationContext()).load(RestClient.BASE_PATH_TO_IMAGE_W154
-                    + biography.getProfilePath()).into(actorImage);
+                    + biography.getProfilePath()).into(mActorimage);
         } else {
-            actorImage.setImageResource(android.R.drawable.ic_menu_help);
+            mActorimage.setImageResource(android.R.drawable.ic_menu_help);
         }
 
 
         if (biography.getName() != null) {
-            nameActor.setText(biography.getName());
+            namNameActoreActor.setText(biography.getName());
         }
         if ("".equals(biography.getName())) {
-            nameActor.setText(R.string.nothing_not_found);
+            namNameActoreActor.setText(R.string.nothing_not_found);
         }
 
 
         if (biography.getBirthday() != null) {
-            birthday.setText(biography.getBirthday());
+            mBirthday.setText(biography.getBirthday());
         }
         if ("".equals(biography.getBirthday())) {
-            birthday.setText(R.string.nothing_not_found);
+            mBirthday.setText(R.string.nothing_not_found);
         }
 
 
         if (biography.getDeathday() != null) {
-            deathday.setText(biography.getDeathday());
+            mDeathday.setText(biography.getDeathday());
         }
         if ("".equals(biography.getDeathday())) {
-            deathday.setText(R.string.nothing_not_found);
+            mDeathday.setText(R.string.nothing_not_found);
         }
 
 
         if (biography.getPlaceOfBirth() != null) {
-            placeBirthday.setText(biography.getPlaceOfBirth());
+            mPlaceBirthday.setText(biography.getPlaceOfBirth());
         }
         if ("".equals(biography.getPlaceOfBirth())) {
-            homepage.setText(R.string.nothing_not_found);
+            mHomepage.setText(R.string.nothing_not_found);
         }
 
         if (biography.getBiography() != null) {
-            biographyAct.setText(biography.getBiography());
+            mBiographyAct.setText(biography.getBiography());
         }
         if ("".equals(biography.getBiography())) {
-            biographyAct.setText(R.string.nothing_not_found);
+            mBiographyAct.setText(R.string.nothing_not_found);
         }
 
 
         if (biography.getHomepage() != null) {
-            homepage.setText(biography.getHomepage());
+            mHomepage.setText(biography.getHomepage());
         }
         if ("".equals(biography.getHomepage())) {
-            homepage.setText(R.string.nothing_not_found);
+            mHomepage.setText(R.string.nothing_not_found);
         }
 
     }
@@ -153,8 +148,8 @@ public class BiographyActorActivity extends ActionBarActivity {
 
     @Override
     public void onPause() {
-        if (adView != null) {
-            adView.pause();
+        if (mAdView != null) {
+            mAdView.pause();
         }
         super.onPause();
     }
@@ -163,16 +158,16 @@ public class BiographyActorActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (adView != null) {
-            adView.resume();
+        if (mAdView != null) {
+            mAdView.resume();
         }
     }
 
 
     @Override
     public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
+        if (mAdView != null) {
+            mAdView.destroy();
         }
         super.onDestroy();
     }

@@ -3,6 +3,7 @@ package com.pundroid.bestmoviesapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -55,9 +56,14 @@ public class SearchActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.include_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        setTitle("Search");
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled((true));
+            actionBar.setHomeButtonEnabled(true);
+        }
+
+        setTitle(getString(R.string.search));
 
         listViewSearch = (ListView) findViewById(R.id.listView_search);
 
@@ -71,15 +77,12 @@ public class SearchActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.search_widget);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
 
-
         searchView.setQueryHint(getResources().getString(R.string.search_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
                 Log.d(TAG, "Query: " + query);
                 startSearchMovie(query);
-
                 return false;
             }
 
@@ -99,23 +102,19 @@ public class SearchActivity extends AppCompatActivity {
             public void success(QueryResultMovies queryResultMovies, Response response) {
                 if (queryResultMovies != null) {
                     movieDetails = queryResultMovies.getResults();
-
                     final SearchMovieAdapter searchMovieAdapter = new SearchMovieAdapter(getApplicationContext(),
                             movieDetails);
-                    listViewSearch.setAdapter(searchMovieAdapter);
 
+                    listViewSearch.setAdapter(searchMovieAdapter);
                     listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                             int movieId = movieDetails.get(position).getId();
-
                             Intent intent = new Intent(getApplicationContext(), DetailMovieActivity.class);
                             intent.putExtra(GridMovieFragment.MOVIE_ID, movieId);
                             startActivity(intent);
                         }
                     });
-
                 }
             }
 
@@ -128,15 +127,10 @@ public class SearchActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
-
-
         if (id == R.id.action_settings) {
-
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

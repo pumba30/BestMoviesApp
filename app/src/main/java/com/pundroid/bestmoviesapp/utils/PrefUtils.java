@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
  */
 public class PrefUtils {
     private SharedPreferences sharedPref;
-    private static PrefUtils instance;
+    private static PrefUtils sInstance;
 
     public static final String KEY_SESSION_USER_USERNAME = "sessionUserUsername";
     public static final String KEY_SESSION_USER_ID = "sessionUserID";
@@ -26,10 +26,10 @@ public class PrefUtils {
     }
 
     public static PrefUtils getInstance(Context context) {
-        if (instance == null) {
-            instance = new PrefUtils(context.getApplicationContext());
+        if (sInstance == null) {
+            sInstance = new PrefUtils(context.getApplicationContext());
         }
-        return instance;
+        return sInstance;
     }
 
     public void storeSessionUser(int userID, String userName, String session_ID) {

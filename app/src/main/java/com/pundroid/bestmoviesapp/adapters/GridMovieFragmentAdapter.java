@@ -21,23 +21,23 @@ import java.util.List;
 public class GridMovieFragmentAdapter extends BaseAdapter {
 
     private static final String TAG = GridMovieFragmentAdapter.class.getSimpleName();
-    private Context context;
-    private List<String> pathToPoster;
+    private Context mContext;
+    private List<String> mPathToPoster;
 
     public GridMovieFragmentAdapter(Context context, List<String> pathToPoster) {
-        this.context = context;
-        this.pathToPoster = pathToPoster;
+        this.mContext = context;
+        this.mPathToPoster = pathToPoster;
         Log.d(TAG, "constructor");
     }
 
     @Override
     public int getCount() {
-        return pathToPoster.size();
+        return mPathToPoster.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return pathToPoster.indexOf(position);
+        return mPathToPoster.indexOf(position);
     }
 
     @Override
@@ -47,37 +47,33 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (convertView == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(context);
+            LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             convertView = layoutInflater.inflate(R.layout.image_view_layout, parent, false);
 
             ViewHolder viewHolder = new ViewHolder();
-
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image_item_movie);
-            viewHolder.gridViewLarge = (GridView) parent.findViewById(R.id.gridViewMovieItem_large);
-            viewHolder.imageView.setAdjustViewBounds(true);
+            viewHolder.mImageView = (ImageView) convertView.findViewById(R.id.image_item_movie);
+            viewHolder.mGridViewLarge = (GridView) parent.findViewById(R.id.gridViewMovieItem_large);
+            viewHolder.mImageView.setAdjustViewBounds(true);
             convertView.setTag(viewHolder);
         }
 
-
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        String poster = pathToPoster.get(position);
+        String poster = mPathToPoster.get(position);
 
         // if use a tablet, download large size image
-        if (viewHolder.gridViewLarge != null) {
-            Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W780 + poster).into(viewHolder.imageView);
+        if (viewHolder.mGridViewLarge != null) {
+            Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W780 + poster).into(viewHolder.mImageView);
         } else {
-            Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W342 + poster).into(viewHolder.imageView);
+            Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W342 + poster).into(viewHolder.mImageView);
         }
-
         return convertView;
     }
 
 
     private static class ViewHolder {
-        public ImageView imageView;
-        public GridView gridViewLarge;
+        public ImageView mImageView;
+        public GridView mGridViewLarge;
     }
 
 

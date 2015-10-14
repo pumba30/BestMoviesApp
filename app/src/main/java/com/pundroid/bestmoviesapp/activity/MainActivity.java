@@ -20,10 +20,10 @@ public class MainActivity extends ActionBarActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String TAG_GRID_MOVIE_FRAGMENT = "com.pundroid.bestmoviesapp.gridMovieFragment";
     public static final String AD_MOB = "adMob";
-    private AdView adView;
-    private boolean isTabletModeDetermined = false;
-    private boolean isTabletMode = false;
-    public static boolean isLarge;
+    private AdView mAdView;
+    private boolean mIsTabletModeDetermined = false;
+    private boolean mIsTabletMode = false;
+    public static boolean sIsLarge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,31 +31,28 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         // Google Ads
-        adView = (AdView) findViewById(R.id.adView);
+        mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent(AD_MOB).build();
-        adView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);
         //********
 
-        isLarge = isTablet(getApplicationContext());
-
+        sIsLarge = isTablet(getApplicationContext());
 
         GridMovieFragment gridMovieFragment = new GridMovieFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container_lin_lay, gridMovieFragment)
                 .addToBackStack(TAG_GRID_MOVIE_FRAGMENT)
                 .commit();
-
-
     }
 
     private boolean isTablet(Context context) {
-        if (!isTabletModeDetermined) {
+        if (!mIsTabletModeDetermined) {
             if (context.getResources().getConfiguration().smallestScreenWidthDp >= 600)
-                isTabletMode = true;
-            isTabletModeDetermined = true;
+                mIsTabletMode = true;
+            mIsTabletModeDetermined = true;
         }
-        return isTabletMode;
+        return mIsTabletMode;
     }
 
 
@@ -76,8 +73,8 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onPause() {
-        if (adView != null) {
-            adView.pause();
+        if (mAdView != null) {
+            mAdView.pause();
         }
         super.onPause();
     }
@@ -86,16 +83,16 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (adView != null) {
-            adView.resume();
+        if (mAdView != null) {
+            mAdView.resume();
         }
     }
 
 
     @Override
     public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
+        if (mAdView != null) {
+            mAdView.destroy();
         }
         super.onDestroy();
     }

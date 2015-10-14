@@ -19,25 +19,25 @@ import java.util.ArrayList;
  * Created by pumba30 on 27.08.2015.
  */
 public class CastListAdapter extends BaseAdapter {
-    private Context context;
-    private ArrayList<Actor> actors;
+    private Context mContext;
+    private ArrayList<Actor> mActors;
 
 
     public CastListAdapter(Context context, ArrayList<Actor> actors) {
-        this.context = context;
-        this.actors = actors;
+        this.mContext = context;
+        this.mActors = actors;
 
     }
 
 
     @Override
     public int getCount() {
-        return actors.size();
+        return mActors.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return actors.indexOf(position);
+        return mActors.indexOf(position);
     }
 
     @Override
@@ -49,33 +49,33 @@ public class CastListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(R.layout.item_list_tab_cast, parent, false);
 
             viewHolder = new ViewHolder();
-            viewHolder.nameActor = (TextView) convertView.findViewById(R.id.name_actor_describe);
-            viewHolder.characterActor = (TextView) convertView.findViewById(R.id.character_actor_describe);
-            viewHolder.imageActor = (ImageView) convertView.findViewById(R.id.imageView_actor);
+            viewHolder.mNameActor = (TextView) convertView.findViewById(R.id.name_actor_describe);
+            viewHolder.mCharacterActor = (TextView) convertView.findViewById(R.id.character_actor_describe);
+            viewHolder.mImageView = (ImageView) convertView.findViewById(R.id.imageView_actor);
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Actor actor = actors.get(position);
+        Actor actor = mActors.get(position);
         if (actor.getProfilePath() != null
                 || actor.getName() != null
                 || actor.getCharacter() != null) {
-            viewHolder.nameActor.setText(actor.getName());
-            viewHolder.characterActor.setText(actor.getCharacter());
+            viewHolder.mNameActor.setText(actor.getName());
+            viewHolder.mCharacterActor.setText(actor.getCharacter());
             String path = actor.getProfilePath();
             if (path != null) {
-                resizeImage(viewHolder.imageActor);
-                Picasso.with(context).load(RestClient.BASE_PATH_TO_IMAGE_W92 + path)
-                        .into(viewHolder.imageActor);
+                resizeImage(viewHolder.mImageView);
+                Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W92 + path)
+                        .into(viewHolder.mImageView);
             } else {
-                resizeImage(viewHolder.imageActor);
-                viewHolder.imageActor.setImageResource(R.drawable.ic_question_mark);
+                resizeImage(viewHolder.mImageView);
+                viewHolder.mImageView.setImageResource(R.drawable.ic_question_mark);
             }
 
         }
@@ -92,8 +92,8 @@ public class CastListAdapter extends BaseAdapter {
 
 
     static class ViewHolder {
-        TextView nameActor;
-        TextView characterActor;
-        ImageView imageActor;
+        TextView mNameActor;
+        TextView mCharacterActor;
+        ImageView mImageView;
     }
 }
