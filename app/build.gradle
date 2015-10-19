@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.pundroid.bestmoviesapp"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 2
         versionName "1.0.1b"
     }
@@ -31,5 +31,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     compile 'com.google.android.gms:play-services-ads:8.1.0'
     compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.0'
-    compile 'jp.satorufujiwara:lighthttp:0.1.0'
+    compile 'de.greenrobot:eventbus:2.4.0'
+
+    androidTestCompile 'junit:junit:4.12'
 }

@@ -33,11 +33,13 @@ public class MainActivity extends ActionBarActivity {
         // Google Ads
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("9F5CC623FFE12A1E5D8943D1D0C866F7") //test device
                 .setRequestAgent(AD_MOB).build();
         mAdView.loadAd(adRequest);
         //********
 
         sIsLarge = isTablet(getApplicationContext());
+
 
         GridMovieFragment gridMovieFragment = new GridMovieFragment();
         FragmentManager fragmentManager = getFragmentManager();

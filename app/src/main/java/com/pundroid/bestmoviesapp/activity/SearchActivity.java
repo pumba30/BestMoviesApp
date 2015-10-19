@@ -20,7 +20,7 @@ import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.SearchMovieAdapter;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
@@ -34,7 +34,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
     private ListView listViewSearch;
-    private ArrayList<MovieDetail> movieDetails = new ArrayList<>();
+    private ArrayList<Movie> mMovies = new ArrayList<>();
     private AdView adView;
 
 
@@ -101,15 +101,15 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void success(QueryResultMovies queryResultMovies, Response response) {
                 if (queryResultMovies != null) {
-                    movieDetails = queryResultMovies.getResults();
+                    mMovies = queryResultMovies.getResults();
                     final SearchMovieAdapter searchMovieAdapter = new SearchMovieAdapter(getApplicationContext(),
-                            movieDetails);
+                            mMovies);
 
                     listViewSearch.setAdapter(searchMovieAdapter);
                     listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            int movieId = movieDetails.get(position).getId();
+                            int movieId = mMovies.get(position).getId();
                             Intent intent = new Intent(getApplicationContext(), DetailMovieActivity.class);
                             intent.putExtra(GridMovieFragment.MOVIE_ID, movieId);
                             startActivity(intent);

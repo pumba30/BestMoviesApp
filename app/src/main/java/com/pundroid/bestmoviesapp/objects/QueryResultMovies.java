@@ -14,7 +14,7 @@ public class QueryResultMovies implements Serializable{
     private int page;
 
     @Expose
-    private ArrayList<MovieDetail> results = new ArrayList<>();
+    private ArrayList<Movie> results = new ArrayList<>();
 
     @SerializedName("total_pages")
     @Expose
@@ -47,7 +47,7 @@ public class QueryResultMovies implements Serializable{
      * @return
      * The results
      */
-    public ArrayList<MovieDetail> getResults() {
+    public ArrayList<Movie> getResults() {
         return results;
     }
 
@@ -56,7 +56,7 @@ public class QueryResultMovies implements Serializable{
      * @param results
      * The results
      */
-    public void setResults(ArrayList<MovieDetail> results) {
+    public void setResults(ArrayList<Movie> results) {
         this.results = results;
     }
 

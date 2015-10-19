@@ -33,6 +33,8 @@ import retrofit.client.Response;
 
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
+    public static final int POSTER_HEIGHT = 300;
+    public static final int POSTER_WIDTH = 200;
     private AdView adView;
 
     // interface for transmission data from this fragment to DetailActivity
@@ -123,8 +125,8 @@ public class DetailMovieActivityFragment extends Fragment {
 
         ImageView imagePoster = (ImageView) view.findViewById(R.id.imageView_poster_w154);
         String pathPoster = RestClient.BASE_PATH_TO_IMAGE_W154 + movie.getPosterPath();
-        imagePoster.getLayoutParams().height = 300;
-        imagePoster.getLayoutParams().width = 200;
+        imagePoster.getLayoutParams().height = POSTER_HEIGHT;
+        imagePoster.getLayoutParams().width = POSTER_WIDTH;
         Picasso.with(getActivity()).load(pathPoster).into(imagePoster);
 
         TextView origTitle = (TextView) view.findViewById(R.id.tv_original_title);
@@ -133,7 +135,7 @@ public class DetailMovieActivityFragment extends Fragment {
         TextView genre = (TextView) view.findViewById(R.id.tv_genre_title);
         List<Genres> genresList = movie.getGenres();
         if (genresList.size() == 0) {
-            genre.setText("Nothing not found");
+            genre.setText(R.string.nothing_found);
         } else {
             StringBuilder builder = new StringBuilder();
             for (Genres item : genresList) {
@@ -155,7 +157,7 @@ public class DetailMovieActivityFragment extends Fragment {
 
         TextView tagLine = (TextView) view.findViewById(R.id.tv_tag_line_title);
         if (movie.getTagline() == null || movie.getTagline().equals("")) {
-            tagLine.setText("Nothing not found");
+            tagLine.setText(R.string.nothing_found);
         } else {
             tagLine.setText(movie.getTagline());
         }
@@ -164,7 +166,7 @@ public class DetailMovieActivityFragment extends Fragment {
         TextView prodComp = (TextView) view.findViewById(R.id.tv_production_companies_description);
         List<ProductionCompanies> prodCompList = movie.getProductionCompanies();
         if (prodCompList.size() == 0) {
-            prodComp.setText("Nothing not found");
+            prodComp.setText(R.string.nothing_found);
         } else {
             StringBuilder stringBuilder = new StringBuilder();
             for (ProductionCompanies companies : prodCompList) {
@@ -178,7 +180,7 @@ public class DetailMovieActivityFragment extends Fragment {
         TextView prodCountries = (TextView) view.findViewById(R.id.tv_production_countries_description);
         List<ProductionCountries> prodCountriesList = movie.getProductionCountries();
         if (prodCountriesList.size() == 0) {
-            prodCountries.setText("Nothing not found");
+            prodCountries.setText(R.string.nothing_found);
         } else {
             StringBuilder builderCountries = new StringBuilder();
             for (ProductionCountries countries : prodCountriesList) {

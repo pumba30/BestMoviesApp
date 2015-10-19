@@ -16,11 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.adapters.SearchMovieAdapter;
 import com.pundroid.bestmoviesapp.objects.Favorite;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.objects.Status;
 import com.pundroid.bestmoviesapp.utils.PrefUtils;
@@ -38,7 +38,7 @@ import retrofit.client.Response;
 public class FavoritesFragment extends Fragment {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
     private ListView listView;
-    private ArrayList<MovieDetail> listFavorites = new ArrayList<>();
+    private ArrayList<Movie> listFavorites = new ArrayList<>();
     private SearchMovieAdapter adapter;
     private String sessionId;
     private int userId;
@@ -69,7 +69,7 @@ public class FavoritesFragment extends Fragment {
         return view;
     }
 
-    private void showDetailMovie(ArrayList<MovieDetail> listFavorites, int position) {
+    private void showDetailMovie(ArrayList<Movie> listFavorites, int position) {
         int movieId = listFavorites.get(position).getId();
 
         Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
@@ -112,7 +112,7 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-    private void dialogDeleteMovie(final ArrayList<MovieDetail> listFavorites, final int position) {
+    private void dialogDeleteMovie(final ArrayList<Movie> listFavorites, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Are you sure you want to remove this movie?")
                 .setCancelable(true)

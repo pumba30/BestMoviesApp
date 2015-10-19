@@ -93,6 +93,8 @@
     <string name="added_fail">Movie Added fail</string>
     <string name="download_failed">Download failed</string>
     <string name="about">About</string>
+    <string name="page">"Page "</string>
+    <string name="nothing_found">Nothing not found</string>
 
     <!-- -->
     <array name="titles_pager_tab">

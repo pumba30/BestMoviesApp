@@ -1,13 +1,16 @@
 package com.pundroid.bestmoviesapp.fragments;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +18,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,19 +37,15 @@ import com.pundroid.bestmoviesapp.activity.LoginActivity;
 import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.adapters.GridMovieFragmentAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
-import com.pundroid.bestmoviesapp.databases.DataModel.Poster;
 import com.pundroid.bestmoviesapp.objects.MovieDetail;
-import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
+import com.pundroid.bestmoviesapp.service.DownloadHelperService;
 import com.pundroid.bestmoviesapp.slidingmenu.NavDrawerItem;
 import com.pundroid.bestmoviesapp.utils.PrefUtils;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by pumba30 on 19.08.2015.
@@ -55,19 +53,24 @@ import retrofit.client.Response;
 public class GridMovieFragment extends Fragment {
     public static final String TAG = GridMovieFragment.class.getSimpleName();
     public static final String MOVIE_TITLE = "com.pundroid.bestmoviesapp.movie_title";
+    public static final String ACTION_SEND_MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_detail";
+    public static final String MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_details";
     public static String MOVIE_ID = "com.pundroid.bestmoviesapp.movie_id";
+    public static final String PATH_POSTER = "path_poster";
     private GridView mGridView;
     private String[] mNavMenuTitles;
     private TypedArray mNavMenuIcons;
     private ActionBarDrawerToggle mDrawerToggle;
-    private int numPage = 1;
-    private ArrayList<MovieDetail> mMovieDetails = new ArrayList<>();
+    private int mNumPage = 1;
+    private ArrayList<MovieDetail> mMovies = new ArrayList<>();
     private String mTypeMovies = RestClient.TOP_RATED_MOVIES;
+    private ResultReceiver mResultReceiver = new ResultReceiver();
     private ProgressBar mProgressBar;
     // при getString(R.string.guest) вылетает!!
-    private String mUserName =  " guest!";
+    private String mUserName = " guest!";
     private boolean mIsLogin;
     private DrawerLayout mDrawerLayout;
+    private DownloadHelperService mHelperService;
 
     public GridMovieFragment() {
     }
@@ -86,6 +89,8 @@ public class GridMovieFragment extends Fragment {
                     " guest") + "!";
         }
 
+        mHelperService = new DownloadHelperService(getActivity().getApplicationContext());
+
         // load slide menu items
         mNavMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
         // nav drawer icons from resources
@@ -96,154 +101,12 @@ public class GridMovieFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (isConnected()) {
-            // here we pass different types of films
-            downloadMovies(numPage, mTypeMovies);
-            toastShowPageNumber();
-        } else {
-            Toast.makeText(getActivity(),
-                    R.string.internet_connection_failed, Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    private void downloadMovies(int numPage, String typeMovies) {
+        // here we pass different types of films
         mProgressBar.setVisibility(View.VISIBLE);
-
-        if (typeMovies.equals(RestClient.TOP_RATED_MOVIES)) {
-            RestClient.get().getMoviesByType(numPage, typeMovies,
-                    new Callback<QueryResultMovies>() {
-                        @Override
-                        public void success(QueryResultMovies queryResultMovies, Response response) {
-                            getMoviesByType(queryResultMovies);
-
-                            mProgressBar.setVisibility(View.INVISIBLE);
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            Log.d(TAG, getString(R.string.download_failed));
-                            mProgressBar.setVisibility(View.INVISIBLE);
-                        }
-                    });
-        }
-
-        if (typeMovies.equals(RestClient.POPULAR_MOVIES)) {
-            RestClient.get().getPopularMovies(numPage, new Callback<QueryResultMovies>() {
-                @Override
-                public void success(QueryResultMovies queryResultMovies, Response response) {
-                    getMoviesByType(queryResultMovies);
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.d(TAG, "Download failed");
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
-            });
-        }
-
-        if (typeMovies.equals(RestClient.UPCOMING_MOVIES)) {
-            RestClient.get().getUpcomingMovies(numPage, new Callback<QueryResultMovies>() {
-                @Override
-                public void success(QueryResultMovies queryResultMovies, Response response) {
-                    getMoviesByType(queryResultMovies);
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.d(TAG, "Download failed");
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
-            });
-        }
-
-
+        mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+        toastShowPageNumber();
     }
 
-    private void getMoviesByType(QueryResultMovies queryResultMovies) {
-        if (queryResultMovies != null) {
-            mMovieDetails = queryResultMovies.getResults();
-            List<String> pathPoster = new ArrayList<>();
-            List<Poster> posters = new ArrayList<>();
-
-            for (MovieDetail item : mMovieDetails) {
-                pathPoster.add(item.getPosterPath());
-//                Poster poster = new Poster(item.getId(), item.getPosterPath());
-//                Log.d(TAG, "item get poster_path " + poster.getMovieId());
-//                posters.add(poster);
-            }
-
-//            //Check this
-//            AsyncTask asyncTask = new DownloadPoster();
-//            asyncTask.execute(posters);
-
-
-            mGridView.setAdapter(new GridMovieFragmentAdapter(getActivity(),
-                    pathPoster));
-        } else {
-            mGridView.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), R.string.poster_loading_failed,
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-//    private class DownloadPoster extends AsyncTask<List<Poster>, Void, Long> {
-//
-//        private Bitmap bitmap;
-//
-//
-//        @SafeVarargs
-//        @Override
-//        protected final Long doInBackground(List<Poster>... params) {
-//            Log.d(TAG, "doInBackground");
-//
-//            List<Poster> posters = params[0];
-//            for (Poster poster : posters) {
-//                File file = new File(getActivity().getCacheDir(), String.valueOf(poster.getMovieId()) + ".png");
-//                OutputStream outputStream;
-//                if (file.exists()) {
-//                    bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//                    return 0L;
-//                }
-//
-//                try {
-//                    file.createNewFile();
-//                    URL urlPoster = new URL(RestClient.BASE_PATH_TO_IMAGE_W342 + poster.getPathToPoster());
-//                    URLConnection connection = urlPoster.openConnection();
-//                    connection.connect();
-//
-//                    InputStream inputStream = connection.getInputStream();
-//                    bitmap = BitmapFactory.decodeStream(inputStream);
-//                    outputStream = new BufferedOutputStream(new FileOutputStream(file));
-//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//                    outputStream.flush();
-//                    outputStream.close();
-//                    return 0L;
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                    return 1L;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return 1L;
-//                }
-//            }
-//            return 1L;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Long aLong) {
-//            if (aLong == 0) {
-//                Log.d(TAG, "Failed to save");
-//            } else {
-//                Log.d(TAG, "Done!");
-//            }
-//
-//
-//        }
-//    }
 
     @Nullable
     @Override
@@ -310,16 +173,27 @@ public class GridMovieFragment extends Fragment {
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int movieId = mMovieDetails.get(position).getId();
-                String movieTitle = mMovieDetails.get(position).getTitle();
+                int movieId = mMovies.get(position).getId();
+                String movieTitle = mMovies.get(position).getTitle();
                 Intent intent = new Intent(getActivity(), DetailMovieActivity.class);
-                // intent.putExtra(IS_LOGIN, mIsLogin);
                 intent.putExtra(MOVIE_ID, movieId);
                 intent.putExtra(MOVIE_TITLE, movieTitle);
                 startActivity(intent);
             }
         });
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(mResultReceiver, new IntentFilter(ACTION_SEND_MOVIE_DETAIL));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mResultReceiver);
     }
 
     @Override
@@ -337,14 +211,14 @@ public class GridMovieFragment extends Fragment {
         // Handle actionbar actions click by arrows
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                numPage++;
-                downloadMovies(numPage, mTypeMovies);
+                mNumPage++;
+                mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
                 toastShowPageNumber();
                 return true;
             case R.id.action_back:
-                numPage--;
-                if (numPage <= 0) numPage = 1;
-                downloadMovies(numPage, mTypeMovies);
+                mNumPage--;
+                if (mNumPage <= 0) mNumPage = 1;
+                mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
                 toastShowPageNumber();
                 return true;
         }
@@ -352,16 +226,11 @@ public class GridMovieFragment extends Fragment {
 
     }
 
-    //check internet connection
-    private boolean isConnected() {
-        ConnectivityManager manager = (ConnectivityManager) getActivity()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
 
     private void toastShowPageNumber() {
-        Toast.makeText(getActivity(), "Page " + String.valueOf(numPage), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(),
+                getActivity().getString(R.string.page)
+                        + String.valueOf(mNumPage), Toast.LENGTH_SHORT).show();
     }
 
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
@@ -374,19 +243,19 @@ public class GridMovieFragment extends Fragment {
             switch (position) {
                 case 1:
                     mTypeMovies = RestClient.TOP_RATED_MOVIES;
-                    downloadMovies(numPage, mTypeMovies);
+                    mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
                     mDrawerLayout.closeDrawers();
                     break;
                 case 2:
                     mTypeMovies = RestClient.POPULAR_MOVIES;
-                    numPage = 1;
-                    downloadMovies(numPage, mTypeMovies);
+                    mNumPage = 1;
+                    mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
                     mDrawerLayout.closeDrawers();
                     break;
                 case 3:
                     mTypeMovies = RestClient.UPCOMING_MOVIES;
-                    numPage = 1;
-                    downloadMovies(numPage, mTypeMovies);
+                    mNumPage = 1;
+                    mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
                     mDrawerLayout.closeDrawers();
                     break;
 
@@ -428,4 +297,65 @@ public class GridMovieFragment extends Fragment {
         }
     }
 
+    public class ResultReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            List<String> pathPoster = new ArrayList<>();
+            if (intent != null) {
+                mMovies = (ArrayList<MovieDetail>) intent.getSerializableExtra(MOVIE_DETAIL);
+                boolean online = false;
+                for (int i = 0; i < mMovies.size(); i++) {
+                    if (mMovies.get(i).getPosterPathStorage() == null) {
+                        pathPoster.add(mMovies.get(i).getPosterPath());
+                        online = true;
+                    } else {
+                        pathPoster.add(mMovies.get(i).getPosterPathStorage());
+                    }
+                }
+                if (online) {
+                    mGridView.setSmoothScrollbarEnabled(true);
+                    mGridView.setAdapter(new GridMovieFragmentAdapter(pathPoster, getActivity()));
+                    mProgressBar.setVisibility(View.GONE);
+                } else {
+                    new DownloadImageTask().execute(pathPoster);
+                }
+
+            } else {
+                mGridView.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), R.string.poster_loading_failed,
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<List<String>, Void, List<Bitmap>> {
+        private List<Bitmap> mBitmaps = new ArrayList<>();
+        private Bitmap mBitmap;
+
+        @Override
+        protected final List<Bitmap> doInBackground(List<String>... params) {
+            for (int i = 0; i < params[0].size(); i++) {
+                File file = new File(params[0].get(i));
+                if (file.exists()) {
+                    mBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    mBitmaps.add(mBitmap);
+                }
+            }
+            return mBitmaps;
+        }
+
+        @Override
+        protected void onPostExecute(List<Bitmap> bitmaps) {
+            if (bitmaps != null) {
+                mGridView.setSmoothScrollbarEnabled(true);
+                mGridView.setAdapter(new GridMovieFragmentAdapter(getActivity(),
+                        bitmaps));
+
+
+                Toast.makeText(getActivity(), "Offline", Toast.LENGTH_LONG).show();
+                mProgressBar.setVisibility(View.GONE);
+            }
+
+        }
+    }
 }

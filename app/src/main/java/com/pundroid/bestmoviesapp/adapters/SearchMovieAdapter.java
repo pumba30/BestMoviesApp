@@ -13,7 +13,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.pundroid.bestmoviesapp.R;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 import com.squareup.picasso.Picasso;
 
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 public class SearchMovieAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<MovieDetail> result;
+    private ArrayList<Movie> result;
 
-    public SearchMovieAdapter(Context context, ArrayList<MovieDetail> result) {
+    public SearchMovieAdapter(Context context, ArrayList<Movie> result) {
         this.context = context;
         this.result = result;
     }
@@ -66,7 +66,7 @@ public class SearchMovieAdapter extends BaseAdapter {
         }
 
        // get the details description of the film and fill item ListView
-        MovieDetail movie = result.get(position);
+        Movie movie = result.get(position);
 
         viewHolder.textViewSearch.setText(movie.getTitle());
         viewHolder.overview.setText(movie.getOverview());

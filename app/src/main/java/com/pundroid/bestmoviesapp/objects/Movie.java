@@ -19,7 +19,7 @@ public class Movie implements Serializable {
     private String backdropPath;
     @SerializedName("genre_ids")
     @Expose
-    private List<Long> genreIds = new ArrayList<Long>();
+    private List<Long> genreIds = new ArrayList<>();
     @Expose
     private int id;
     @SerializedName("original_language")
@@ -48,6 +48,25 @@ public class Movie implements Serializable {
     @SerializedName("vote_count")
     @Expose
     private Long voteCount;
+
+    private String backdropPathStorage;
+    private String posterPathStorage;
+
+    public String getBackdropPathStorage() {
+        return backdropPathStorage;
+    }
+
+    public void setBackdropPathStorage(String backdropPathStorage) {
+        this.backdropPathStorage = backdropPathStorage;
+    }
+
+    public String getPosterPathStorage() {
+        return posterPathStorage;
+    }
+
+    public void setPosterPathStorage(String posterPathStorage) {
+        this.posterPathStorage = posterPathStorage;
+    }
 
     /**
      *

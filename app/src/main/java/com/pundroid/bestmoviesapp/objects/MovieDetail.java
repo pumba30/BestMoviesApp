@@ -23,7 +23,7 @@ public class MovieDetail implements Serializable {
     @Expose
     private Integer budget;
     @Expose
-    private List<Genres> genres = new ArrayList<Genres>();
+    private List<Genres> genres = new ArrayList<>();
     @Expose
     private String homepage;
     @Expose
@@ -74,6 +74,25 @@ public class MovieDetail implements Serializable {
     @SerializedName("vote_count")
     @Expose
     private Integer voteCount;
+
+    private String backdropPathStorage;
+    private String posterPathStorage;
+
+    public String getBackdropPathStorage() {
+        return backdropPathStorage;
+    }
+
+    public void setBackdropPathStorage(String backdropPathStorage) {
+        this.backdropPathStorage = backdropPathStorage;
+    }
+
+    public String getPosterPathStorage() {
+        return posterPathStorage;
+    }
+
+    public void setPosterPathStorage(String posterPathStorage) {
+        this.posterPathStorage = posterPathStorage;
+    }
 
     /**
      * @return The adult

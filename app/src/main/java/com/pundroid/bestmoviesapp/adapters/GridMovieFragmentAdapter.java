@@ -1,6 +1,7 @@
 package com.pundroid.bestmoviesapp.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,22 +23,35 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
 
     private static final String TAG = GridMovieFragmentAdapter.class.getSimpleName();
     private Context mContext;
-    private List<String> mPathToPoster;
+    private List<Bitmap> mPosterImages;
+    private List<String> mPathList;
 
-    public GridMovieFragmentAdapter(Context context, List<String> pathToPoster) {
-        this.mContext = context;
-        this.mPathToPoster = pathToPoster;
+    public GridMovieFragmentAdapter(Context context, List<Bitmap> posterImages) {
+        mContext = context;
+        mPosterImages = posterImages;
+        Log.d(TAG, "constructor");
+    }
+
+    public GridMovieFragmentAdapter(List<String> pathToPoster, Context context) {
+        mContext = context;
+        mPathList = pathToPoster;
         Log.d(TAG, "constructor");
     }
 
     @Override
     public int getCount() {
-        return mPathToPoster.size();
+        if (mPosterImages != null) {
+            return mPosterImages.size();
+        }
+        return mPathList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mPathToPoster.indexOf(position);
+        if (mPosterImages != null) {
+            return mPosterImages.indexOf(position);
+        }
+        return mPathList.indexOf(position);
     }
 
     @Override
@@ -57,15 +71,15 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
             viewHolder.mImageView.setAdjustViewBounds(true);
             convertView.setTag(viewHolder);
         }
-
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        String poster = mPathToPoster.get(position);
 
-        // if use a tablet, download large size image
-        if (viewHolder.mGridViewLarge != null) {
-            Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W780 + poster).into(viewHolder.mImageView);
+        if (mPosterImages != null) {
+            Bitmap image = mPosterImages.get(position);
+            viewHolder.mImageView.setImageBitmap(image);
         } else {
-            Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W342 + poster).into(viewHolder.mImageView);
+            String path = RestClient.BASE_PATH_TO_IMAGE_W780 + mPathList.get(position);
+            Log.d(TAG, path);
+            Picasso.with(mContext).load(path).into(viewHolder.mImageView);
         }
         return convertView;
     }
@@ -75,6 +89,5 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
         public ImageView mImageView;
         public GridView mGridViewLarge;
     }
-
 
 }
