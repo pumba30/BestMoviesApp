@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -49,7 +50,6 @@ public class CastFragment extends Fragment {
         }
         return instance;
     }
-
 
 
     @Override
@@ -108,6 +108,24 @@ public class CastFragment extends Fragment {
                 long actorId = actors.get(position).getId();
                 intent.putExtra(ACTOR_ID, actorId);
                 startActivity(intent);
+
+            }
+        });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // get out ads from last list's item
+                int lastVisiblePosition = view.getLastVisiblePosition() + 1;
+                if (lastVisiblePosition == (totalItemCount - 1)) {
+                    adView.setVisibility(View.INVISIBLE);
+                } else if (lastVisiblePosition < (totalItemCount - 1)) {
+                    adView.setVisibility(View.VISIBLE);
+                }
 
             }
         });

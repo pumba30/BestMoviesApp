@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by pumba30 on 29.08.2015.
  */
-public class MovieDetail implements Serializable {
+public class MovieDetails implements Serializable {
 
     @Expose
     private Boolean adult;

@@ -16,13 +16,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.objects.Genres;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.MovieDetails;
 import com.pundroid.bestmoviesapp.objects.ProductionCompanies;
 import com.pundroid.bestmoviesapp.objects.ProductionCountries;
 import com.pundroid.bestmoviesapp.utils.RestClient;
+import com.pundroid.bestmoviesapp.utils.ScrollViewExt;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -35,13 +36,18 @@ public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
     public static final int POSTER_HEIGHT = 300;
     public static final int POSTER_WIDTH = 200;
+    public static final int END_SCROLLING = 17;
     private AdView adView;
 
     // interface for transmission data from this fragment to DetailActivity
     public interface IDataSendDetailMovie {
-        void onDataSendDetailMovie(MovieDetail movieDetail);
+        void onDataSendDetailMovie(MovieDetails movieDetail);
     }
 
+    public interface ScrollViewListener {
+        void onScrollChanged(ScrollViewExt scrollView,
+                             int x, int y, int oldx, int oldy);
+    }
 
     IDataSendDetailMovie sendDetailMovie;
     private static DetailMovieActivityFragment instance;
@@ -72,9 +78,9 @@ public class DetailMovieActivityFragment extends Fragment {
     }
 
     private void downloadMovieDetail(int movieId) {
-        RestClient.get().getDetailMovieById(movieId, new Callback<MovieDetail>() {
+        RestClient.get().getDetailMovieById(movieId, new Callback<MovieDetails>() {
             @Override
-            public void success(MovieDetail movieDetail, Response response) {
+            public void success(MovieDetails movieDetail, Response response) {
                 if (movieDetail != null) {
                     fillLayout(getView(), movieDetail);
 
@@ -105,11 +111,28 @@ public class DetailMovieActivityFragment extends Fragment {
         adView.loadAd(adRequest);
         //********
 
+        ScrollViewExt scrollView = (ScrollViewExt) view.findViewById(R.id.scrollView_detail_movie);
+        // get out ads from end scrollView
+        scrollView.setScrollViewListener(new ScrollViewListener() {
+            @Override
+            public void onScrollChanged(ScrollViewExt scrollView, int x, int y, int oldx, int oldy) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+
+                Log.d(TAG, "DIFF= :" + diff);
+                if (diff < END_SCROLLING) {
+                    adView.setVisibility(View.INVISIBLE);
+                } else if (diff > END_SCROLLING) {
+                    adView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         Log.d(TAG, "onCreateView");
         return view;
     }
 
-    private void fillLayout(View view, MovieDetail movie) {
+    private void fillLayout(View view, MovieDetails movie) {
         assert movie != null;
 
         // if use a tablet, download large size image
@@ -194,10 +217,12 @@ public class DetailMovieActivityFragment extends Fragment {
         overview.setText(movie.getOverview());
 
         TextView budget = (TextView) view.findViewById(R.id.cell_budget);
-        budget.setText(String.valueOf(movie.getBudget()) + " $");
+        String budgetStr = String.valueOf(movie.getBudget()) + " $";
+        budget.setText(budgetStr);
 
         TextView runtime = (TextView) view.findViewById(R.id.cell_runtime);
-        runtime.setText(String.valueOf(movie.getRuntime()) + " min");
+        String runtimeStr = String.valueOf(movie.getRuntime()) + " min";
+        runtime.setText(runtimeStr);
 
         TextView revenue = (TextView) view.findViewById(R.id.cell_revenue);
         revenue.setText(String.valueOf(movie.getRuntime()));

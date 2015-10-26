@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,14 +30,13 @@ import retrofit.client.Response;
 /**
  * Created by pumba30 on 23.08.2015.
  */
-public class CrewFragment extends Fragment  {
+public class CrewFragment extends Fragment {
     private static final String TAG = CrewFragment.class.getSimpleName();
     private static CrewFragment instance;
-    private int movieId;
     private AdView adView;
 
     private ListView listViewCrew;
-    private ArrayList<CrewMember> crewMembers = new ArrayList<>();
+    private ArrayList<CrewMember> mCrewMembers = new ArrayList<>();
 
     public static CrewFragment newInstance() {
         if (instance == null) {
@@ -68,8 +68,8 @@ public class CrewFragment extends Fragment  {
             @Override
             public void success(Credits credits, Response response) {
                 if (credits != null) {
-                    crewMembers = credits.getCrew();
-                    listViewCrew.setAdapter(new CrewListAdapter(getActivity(), crewMembers));
+                    mCrewMembers = credits.getCrew();
+                    listViewCrew.setAdapter(new CrewListAdapter(getActivity(), mCrewMembers));
                 } else {
                     listViewCrew.setVisibility(View.GONE);
                     Toast.makeText(getActivity(), "Actors loading failed",
@@ -93,12 +93,30 @@ public class CrewFragment extends Fragment  {
 
         // Google Ads
         adView = (AdView) view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
+        final AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent("adMob").build();
         adView.loadAd(adRequest);
         //********
 
         listViewCrew = (ListView) view.findViewById(R.id.list_crew_movie);
+        listViewCrew.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+               // get out ads from last list's item
+                int lastVisiblePosition = view.getLastVisiblePosition() + 1;
+                if (lastVisiblePosition == (totalItemCount - 1)) {
+                    adView.setVisibility(View.INVISIBLE);
+                } else if (lastVisiblePosition < (totalItemCount - 1)) {
+                    adView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
 
         return view;
     }

@@ -8,9 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -37,13 +36,12 @@ import com.pundroid.bestmoviesapp.activity.LoginActivity;
 import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.adapters.GridMovieFragmentAdapter;
 import com.pundroid.bestmoviesapp.adapters.NavDrawerListAdapter;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.service.DownloadHelperService;
 import com.pundroid.bestmoviesapp.slidingmenu.NavDrawerItem;
 import com.pundroid.bestmoviesapp.utils.PrefUtils;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +51,8 @@ import java.util.List;
 public class GridMovieFragment extends Fragment {
     public static final String TAG = GridMovieFragment.class.getSimpleName();
     public static final String MOVIE_TITLE = "com.pundroid.bestmoviesapp.movie_title";
-    public static final String ACTION_SEND_MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_detail";
-    public static final String MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_details";
+    public static final String ACTION_SEND_MOVIE = "com.pundroid.bestmoviesapp.send_movie_detail";
+    public static final String MOVIE = "com.pundroid.bestmoviesapp.send_movie";
     public static String MOVIE_ID = "com.pundroid.bestmoviesapp.movie_id";
     public static final String PATH_POSTER = "path_poster";
     private GridView mGridView;
@@ -62,13 +60,14 @@ public class GridMovieFragment extends Fragment {
     private TypedArray mNavMenuIcons;
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNumPage = 1;
-    private ArrayList<MovieDetail> mMovies = new ArrayList<>();
+    private ArrayList<Movie> mMovies = new ArrayList<>();
     private String mTypeMovies = RestClient.TOP_RATED_MOVIES;
     private ResultReceiver mResultReceiver = new ResultReceiver();
     private ProgressBar mProgressBar;
     // при getString(R.string.guest) вылетает!!
     private String mUserName = " guest!";
     private boolean mIsLogin;
+    private boolean mIsConnected;
     private DrawerLayout mDrawerLayout;
     private DownloadHelperService mHelperService;
 
@@ -79,6 +78,10 @@ public class GridMovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
+
+        //check internet connection
+        mIsConnected = isConnected();
 
         SharedPreferences preferences = getActivity()
                 .getSharedPreferences(PrefUtils.KEY_SHARED_PREF, Context.MODE_PRIVATE);
@@ -89,13 +92,22 @@ public class GridMovieFragment extends Fragment {
                     " guest") + "!";
         }
 
-        mHelperService = new DownloadHelperService(getActivity().getApplicationContext());
+        mHelperService = new DownloadHelperService(getActivity().getApplicationContext(),
+                isConnected());
 
         // load slide menu items
         mNavMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
         // nav drawer icons from resources
         mNavMenuIcons = getResources()
                 .obtainTypedArray(R.array.nav_drawer_icons);
+    }
+
+    //check internet connection
+    private boolean isConnected() {
+        ConnectivityManager manager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     @Override
@@ -187,7 +199,7 @@ public class GridMovieFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().registerReceiver(mResultReceiver, new IntentFilter(ACTION_SEND_MOVIE_DETAIL));
+        getActivity().registerReceiver(mResultReceiver, new IntentFilter(ACTION_SEND_MOVIE));
     }
 
     @Override
@@ -301,61 +313,23 @@ public class GridMovieFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             List<String> pathPoster = new ArrayList<>();
+            boolean isConnected = isConnected();
             if (intent != null) {
-                mMovies = (ArrayList<MovieDetail>) intent.getSerializableExtra(MOVIE_DETAIL);
-                boolean online = false;
+                mMovies = (ArrayList<Movie>) intent.getSerializableExtra(MOVIE);
                 for (int i = 0; i < mMovies.size(); i++) {
-                    if (mMovies.get(i).getPosterPathStorage() == null) {
+                    //*****************
+                    if (isConnected) {
                         pathPoster.add(mMovies.get(i).getPosterPath());
-                        online = true;
-                    } else {
+                    }
+                    //*****************
+                    if (!isConnected) {
                         pathPoster.add(mMovies.get(i).getPosterPathStorage());
                     }
                 }
-                if (online) {
-                    mGridView.setSmoothScrollbarEnabled(true);
-                    mGridView.setAdapter(new GridMovieFragmentAdapter(pathPoster, getActivity()));
-                    mProgressBar.setVisibility(View.GONE);
-                } else {
-                    new DownloadImageTask().execute(pathPoster);
-                }
-
-            } else {
-                mGridView.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), R.string.poster_loading_failed,
-                        Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    private class DownloadImageTask extends AsyncTask<List<String>, Void, List<Bitmap>> {
-        private List<Bitmap> mBitmaps = new ArrayList<>();
-        private Bitmap mBitmap;
-
-        @Override
-        protected final List<Bitmap> doInBackground(List<String>... params) {
-            for (int i = 0; i < params[0].size(); i++) {
-                File file = new File(params[0].get(i));
-                if (file.exists()) {
-                    mBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    mBitmaps.add(mBitmap);
-                }
-            }
-            return mBitmaps;
-        }
-
-        @Override
-        protected void onPostExecute(List<Bitmap> bitmaps) {
-            if (bitmaps != null) {
-                mGridView.setSmoothScrollbarEnabled(true);
-                mGridView.setAdapter(new GridMovieFragmentAdapter(getActivity(),
-                        bitmaps));
-
-
-                Toast.makeText(getActivity(), "Offline", Toast.LENGTH_LONG).show();
-                mProgressBar.setVisibility(View.GONE);
-            }
-
+            mGridView.setSmoothScrollbarEnabled(true);
+            mGridView.setAdapter(new GridMovieFragmentAdapter(pathPoster, getActivity()));
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 }

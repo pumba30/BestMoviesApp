@@ -23,8 +23,6 @@ public class RestClient {
     public static final String TOP_RATED_MOVIES = "top_rated";
     public static final String POPULAR_MOVIES = "popular";
     public static final String UPCOMING_MOVIES = "upcoming";
-    public static final String FAVORITES_MOVIES = "favorites_movies";
-    public static final String WATCH_LIST = "watch_list_movies";
 
     private RestClient() {
     }

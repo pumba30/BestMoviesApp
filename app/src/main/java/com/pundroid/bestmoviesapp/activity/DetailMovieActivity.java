@@ -22,7 +22,7 @@ import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 import com.pundroid.bestmoviesapp.objects.AccountState;
 import com.pundroid.bestmoviesapp.objects.Favorite;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.MovieDetails;
 import com.pundroid.bestmoviesapp.objects.Status;
 import com.pundroid.bestmoviesapp.utils.PrefUtils;
 import com.pundroid.bestmoviesapp.utils.RestClient;
@@ -34,7 +34,7 @@ import retrofit.client.Response;
 public class DetailMovieActivity extends ActionBarActivity implements DetailMovieActivityFragment.IDataSendDetailMovie {
     private static final String TAG = DetailMovieActivity.class.getSimpleName();
     public static final String KEY_IS_LOGIN = "com.pundroid.bestmoviesapp.key_is_login";
-    private MovieDetail mMovieDetail;
+    private MovieDetails mMovieDetail;
     private boolean mIsLogin;
     private int mMovieId;
     private String mSessionId;
@@ -187,7 +187,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
 
     // get data from fragment
     @Override
-    public void onDataSendDetailMovie(MovieDetail movieDetail) {
+    public void onDataSendDetailMovie(MovieDetails movieDetail) {
         this.mMovieDetail = movieDetail;
     }
 

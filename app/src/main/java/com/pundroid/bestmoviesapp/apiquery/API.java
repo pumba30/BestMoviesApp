@@ -5,7 +5,7 @@ import com.pundroid.bestmoviesapp.objects.AccountUser;
 import com.pundroid.bestmoviesapp.objects.Biography;
 import com.pundroid.bestmoviesapp.objects.Credits;
 import com.pundroid.bestmoviesapp.objects.Favorite;
-import com.pundroid.bestmoviesapp.objects.MovieDetail;
+import com.pundroid.bestmoviesapp.objects.MovieDetails;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.objects.Session;
 import com.pundroid.bestmoviesapp.objects.SimilarMovie;
@@ -52,7 +52,7 @@ public interface API {
     // http://api.themoviedb.org/3/movie/13539?api_key=API_KEY
     @GET("/movie/{idMovie}" + API_KEY)
     void getDetailMovieById(@Path("idMovie") int idMovie,
-                            Callback<MovieDetail> response);
+                            Callback<MovieDetails> response);
 
     // /movie/popular
     // http://api.themoviedb.org/3/movie/popular?api_key=API_KEY
@@ -70,7 +70,10 @@ public interface API {
     @GET("/search/movie" + API_KEY)
     void searchMovies(@Query("query") String title,
                       Callback<QueryResultMovies> callback);
+
     // http://image.tmdb.org/t/p/w342/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg
+    //    @GET("/{idImage}")
+    //    Bitmap getImage(@Path("idImage") String idImage);
 
 
     //********************************************************************************************

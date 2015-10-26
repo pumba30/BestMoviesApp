@@ -51,15 +51,15 @@ public class MovieProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         int uriType = sUriMatcher.match(uri);
-        Cursor cursor;
+        Cursor cursor = null;
         if (uriType == MOVIES) {
             cursor = mDbHelper.getWritableDatabase().query(true, MovieTable.TABLE_NAME, projection,
                     selection, selectionArgs, null, null, sortOrder, ROW_LIMIT);
             cursor.setNotificationUri(mContext.getContentResolver(), uri);
         }
         if (uriType == MOVIE_ID) {
-            cursor = mDbHelper.getMovieById(uri.getLastPathSegment());
-            cursor.setNotificationUri(mContext.getContentResolver(), uri);
+           // cursor = mDbHelper.getMovieById(uri.getLastPathSegment());
+            //cursor.setNotificationUri(mContext.getContentResolver(), uri);
         } else {
             throw new IllegalArgumentException("Unknown URI");
         }

@@ -29,13 +29,13 @@ public class BiographyActorActivity extends ActionBarActivity {
     private static final String TAG = BiographyActorActivity.class.getSimpleName();
 
 
-    private TextView namNameActoreActor;
+    private TextView namNameActor;
     private TextView mBirthday;
     private TextView mDeathday;
     private TextView mPlaceBirthday;
     private TextView mBiographyAct;
     private TextView mHomepage;
-    private ImageView mActorimage;
+    private ImageView mActorImage;
     private AdView mAdView;
 
     @Override
@@ -50,13 +50,13 @@ public class BiographyActorActivity extends ActionBarActivity {
         mAdView.loadAd(adRequest);
         //********
 
-        namNameActoreActor = (TextView) findViewById(R.id.tv_name_actor);
+        namNameActor = (TextView) findViewById(R.id.tv_name_actor);
         mBirthday = (TextView) findViewById(R.id.tv_birthday);
         mDeathday = (TextView) findViewById(R.id.tv_deathday);
         mPlaceBirthday = (TextView) findViewById(R.id.tv_place_birthday);
         mBiographyAct = (TextView) findViewById(R.id.tv_biography_desc);
         mHomepage = (TextView) findViewById(R.id.tv_homepage_actor_description);
-        mActorimage = (ImageView) findViewById(R.id.imageView_poster_actor_w154);
+        mActorImage = (ImageView) findViewById(R.id.imageView_poster_actor_w154);
 
         Intent intent = getIntent();
         int idPerson = (int) intent.getLongExtra(CastFragment.ACTOR_ID, 0);
@@ -88,20 +88,20 @@ public class BiographyActorActivity extends ActionBarActivity {
 
 
         if (biography.getProfilePath() != null) {
-            mActorimage.getLayoutParams().height = 300;
-            mActorimage.getLayoutParams().width = 200;
+            mActorImage.getLayoutParams().height = 300;
+            mActorImage.getLayoutParams().width = 200;
             Picasso.with(getApplicationContext()).load(RestClient.BASE_PATH_TO_IMAGE_W154
-                    + biography.getProfilePath()).into(mActorimage);
+                    + biography.getProfilePath()).into(mActorImage);
         } else {
-            mActorimage.setImageResource(android.R.drawable.ic_menu_help);
+            mActorImage.setImageResource(android.R.drawable.ic_menu_help);
         }
 
 
         if (biography.getName() != null) {
-            namNameActoreActor.setText(biography.getName());
+            namNameActor.setText(biography.getName());
         }
         if ("".equals(biography.getName())) {
-            namNameActoreActor.setText(R.string.nothing_not_found);
+            namNameActor.setText(R.string.nothing_not_found);
         }
 
 

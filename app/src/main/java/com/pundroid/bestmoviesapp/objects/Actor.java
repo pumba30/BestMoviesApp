@@ -17,6 +17,15 @@ public class Actor {
     @SerializedName("profile_path")
     @Expose
     private String profilePath;
+    private String profilePathToStorage;
+
+    public String getProfilePathToStorage() {
+        return profilePathToStorage;
+    }
+
+    public void setProfilePathToStorage(String profilePathToStorage) {
+        this.profilePathToStorage = profilePathToStorage;
+    }
 
     /**
      *
