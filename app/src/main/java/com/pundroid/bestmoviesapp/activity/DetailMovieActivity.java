@@ -78,8 +78,9 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         tabs.setViewPager(pager);
 
         DetailMovieActivityFragment.newInstance().setArguments(args);
-        CrewFragment.newInstance().setArguments(args);
         CastFragment.newInstance().setArguments(args);
+        CrewFragment.newInstance().setArguments(args);
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.pundroid.bestmoviesapp.databases;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.pundroid.bestmoviesapp.databases.DbSchema.ActorsTable;
 import com.pundroid.bestmoviesapp.databases.DbSchema.BiographyActorTable;
@@ -46,7 +47,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 + MovieTable.Column.ROW_ID + INTEGER_PRIMARY_KEY_AUTOINCREMENT
                 + MovieTable.Column.MOVIE_ID + COMMA
                 + MovieTable.Column.POSTER_PATH_STORAGE + COMMA
-                + MovieTable.Column.POSTER_PATH_WEB
+                + MovieTable.Column.POSTER_PATH_WEB + COMMA
+                + MovieTable.Column.MOVIE_TITLE
                 + ");");
 
         db.execSQL(CREATE_TABLE + DetailsMovieTable.TABLE_NAME + "("
@@ -111,6 +113,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 + CrewTable.Column.PROFILE_PHOTO_PATH_TO_STORAGE + COMMA
                 + FOREIGN_KEY + CrewTable.Column.MEMBER_CREW_ID + REFERENCES
                 + DetailsMovieTable.TABLE_NAME + "(" + DetailsMovieTable.Column.ROW_ID + "))");
+
+        Log.d(TAG, "Create tables");
     }
 
     @Override

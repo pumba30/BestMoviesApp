@@ -64,6 +64,9 @@ public class DataSource {
         if (movie.getPosterPathStorage() != null) {
             values.put(MovieTable.Column.POSTER_PATH_STORAGE, movie.getPosterPathStorage());
         }
+        if (movie.getTitle() != null) {
+            values.put(MovieTable.Column.MOVIE_TITLE, movie.getTitle());
+        }
         long insertId = mDatabase.insert(MovieTable.TABLE_NAME, null, values);
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
@@ -150,13 +153,61 @@ public class DataSource {
         }
         if (movieDetails.getHomepage() != null) {
             values.put(DetailsMovieTable.Column.HOMEPAGE,
-                    movieDetails.getBudget());
+                    movieDetails.getHomepage());
         }
         long insertId = mDatabase.insert(DetailsMovieTable.TABLE_NAME, null, values);
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
-
+        Log.d(TAG, "Save movie details");
         return insertId;
+    }
+
+    public MovieDetails getMovieDetails(int movieId) {
+        MovieDetails details = new MovieDetails();
+        Cursor cursor = mDatabase.query(DetailsMovieTable.TABLE_NAME, null,
+                DetailsMovieTable.Column.MOVIE_ID + "=" + movieId, null, null, null, null);
+        cursor.moveToFirst();
+        details.setBackdropPath(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.BACKDROP_PATH_WEB)));
+        details.setBackdropPathStorage(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.BACKDROP_PATH_STORAGE)));
+        details.setPosterPath(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.POSTER_PATH_WEB)));
+        details.setPosterPathStorage(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.POSTER_PATH_STORAGE)));
+        details.setId(cursor.getInt(
+                cursor.getColumnIndex(DetailsMovieTable.Column.MOVIE_ID)));
+        details.setOriginalTitle(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.ORIGINAL_TITLE)));
+        details.setOverview(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.OVERVIEW)));
+        details.setReleaseDate(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.RELEASE_DATE)));
+        details.setPopularity(cursor.getFloat(
+                cursor.getColumnIndex(DetailsMovieTable.Column.POPULARITY)));
+        details.setTitle(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.TITLE)));
+        details.setVoteAverage(cursor.getFloat(
+                cursor.getColumnIndex(DetailsMovieTable.Column.VOTE_AVERAGE)));
+        details.setVoteCount(cursor.getInt(
+                cursor.getColumnIndex(DetailsMovieTable.Column.VOTE_COUNT)));
+//        details.setGenres(cursor.getString(
+//                cursor.getColumnIndex(DetailsMovieTable.Column.GENRES)));
+//        details.setProductionCompanies(cursor.getString(
+//                cursor.getColumnIndex(DetailsMovieTable.Column.PRODUCTION_COMPANIES)));
+//        details.setProductionCountries(cursor.getString(
+//                cursor.getColumnIndex(DetailsMovieTable.Column.PRODUCTION_COUNTRIES)));
+        details.setBudget(cursor.getInt(
+                cursor.getColumnIndex(DetailsMovieTable.Column.BUDGET)));
+        details.setRevenue(cursor.getInt(
+                cursor.getColumnIndex(DetailsMovieTable.Column.REVENUE)));
+        details.setRuntime(cursor.getInt(
+                cursor.getColumnIndex(DetailsMovieTable.Column.RUNTIME)));
+        details.setHomepage(cursor.getString(
+                cursor.getColumnIndex(DetailsMovieTable.Column.HOMEPAGE)));
+
+        cursor.close();
+        return details;
     }
 
     //check for entries in the table
@@ -189,35 +240,25 @@ public class DataSource {
                         cursor.getColumnIndex(MovieTable.Column.MOVIE_ID)));
                 movie.setPosterPath(cursor.getString(
                         cursor.getColumnIndex(MovieTable.Column.POSTER_PATH_WEB)));
+//                movie.setTitle(cursor.getString(
+//                        cursor.getColumnIndex(MovieTable.Column.MOVIE_TITLE)));
                 movies.add(movie);
                 if (cursor.isAfterLast()) {
                     cursor.close();
                 }
             }
-
         }
+
         return movies;
     }
 
     public boolean isTableNotEmpty(String tableName) {
-        if(DatabaseUtils.queryNumEntries(mDatabase, tableName) > 0){
+        if (DatabaseUtils.queryNumEntries(mDatabase, tableName) > 0) {
             return true;
         }
         return false;
     }
 
-
-    public Movie getMovieFromCursor(Cursor cursor) {
-        Movie movie = new Movie();
-        movie.setId(cursor.getInt(cursor
-                .getColumnIndex(MovieTable.Column.MOVIE_ID)));
-        movie.setPosterPath(cursor
-                .getString(cursor.getColumnIndex(MovieTable.Column.POSTER_PATH_WEB)));
-        movie.setPosterPathStorage(cursor
-                .getString(cursor.getColumnIndex(MovieTable.Column.POSTER_PATH_STORAGE)));
-
-        return movie;
-    }
 
     private List<Long> getListFromStringJson(String string) throws JSONException {
         JSONArray jsonArray = new JSONArray(string);
@@ -234,17 +275,5 @@ public class DataSource {
         return gson.toJson(list);
     }
 
-    public boolean isTableExists(String tableName) {
 
-        Cursor cursor = mDatabase
-                .rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
-        if (cursor != null) {
-            if (cursor.getCount() > 0) {
-                cursor.close();
-                return true;
-            }
-            cursor.close();
-        }
-        return false;
-    }
 }

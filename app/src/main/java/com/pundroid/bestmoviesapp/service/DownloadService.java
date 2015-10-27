@@ -10,8 +10,10 @@ import android.util.Log;
 
 import com.pundroid.bestmoviesapp.databases.DataSource;
 import com.pundroid.bestmoviesapp.databases.DbSchema.MovieTable;
+import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 import com.pundroid.bestmoviesapp.objects.Movie;
+import com.pundroid.bestmoviesapp.objects.MovieDetails;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 
@@ -36,17 +38,26 @@ import retrofit.client.Response;
 public class DownloadService extends IntentService {
     public static final String TAG = DownloadService.class.getSimpleName();
     public static final String JPG = ".jpg";
+    public static final int LAST_SEGMENT = 99;
+    private DataSource mDataSource;
 
     public DownloadService() {
         super("DownloadService");
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        mDataSource = new DataSource(getApplicationContext());
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
+        if (intent != null && intent.hasExtra(DownloadHelperService.TYPE_MOVIES)) {
             int numPage = intent.getIntExtra(DownloadHelperService.NUM_PAGE, 1);
             String typeMovies = intent.getStringExtra(DownloadHelperService.TYPE_MOVIES);
             boolean isConnected = intent.getBooleanExtra(DownloadHelperService.IS_CONNECTED, true);
+            Log.d(TAG, "Intent TYPE_MOVIES");
             if (isConnected) {
                 // get movie from internet
                 downloadMainMovies(numPage, typeMovies);
@@ -54,18 +65,90 @@ public class DownloadService extends IntentService {
                 downloadFromDbMainPosters();
             }
         }
+        //for download details movie
+        if (intent != null && intent.hasExtra(DownloadHelperService.MOVIE_ID)) {
+            int movieId = intent.getIntExtra(DownloadHelperService.MOVIE_ID, 0);
+            boolean isConnected = intent.getBooleanExtra(DownloadHelperService.IS_CONNECTED, true);
+            Log.d(TAG, "Intent MOVIE_ID");
+            if (isConnected) {
+                // get movie from internet
+                downloadDetailMovie(movieId);
+            } else {
+                downloadFromDbDetailMovies(movieId);
+            }
+
+        }
+    }
+
+    private void downloadDetailMovie(int movieId) {
+        RestClient.get().getDetailMovieById(movieId, new Callback<MovieDetails>() {
+            @Override
+            public void success(MovieDetails movieDetail, Response response) {
+                if (movieDetail != null) {
+                    fillDataDetailMovieToTable(movieDetail);
+                    sendMovieDetails(movieDetail);
+
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d(TAG, "Load movie failed");
+            }
+        });
+    }
+
+    private void fillDataDetailMovieToTable(final MovieDetails details) {
+        Log.d(TAG, "Fill Database Table MovieDetail");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                        //reuse poster image
+                        String posterPathStorage = saveImageToStorage(getPosterUrl(details),
+                                details.getId());
+                        int backDropId = details.getId() + LAST_SEGMENT;
+                        String backdropPathToStorage = saveImageToStorage(getBackdropUrl(details),
+                                backDropId);
+                        details.setPosterPathStorage(posterPathStorage);
+                        details.setBackdropPath(backdropPathToStorage);
+                        mDataSource.saveMovieDetail(details);
+                        Log.d(TAG, "Save Movie Detail");
+
+                } catch (SQLException e) {
+                    Log.d(TAG, "Fail fill database table Movies");
+                }
+            }
+        }).start();
+    }
+
+    private void downloadFromDbDetailMovies(int movieId) {
+            Log.d(TAG, "downloadFromDbDetailMovies");
+            MovieDetails details = mDataSource.getMovieDetails(movieId);
+            sendMovieDetails(details);
+    }
+
+
+    private void sendMovieDetails(MovieDetails details) {
+        if (details != null) {
+            Intent broadcastIntent = new Intent();
+            broadcastIntent.putExtra(DetailMovieActivityFragment.MOVIE_DETAIL, details);
+            broadcastIntent.setAction(DetailMovieActivityFragment.ACTION_SEND_MOVIE_DETAIL);
+            sendBroadcast(broadcastIntent);
+            stopSelf();
+        }
     }
 
     private void downloadFromDbMainPosters() {
-        DataSource dataSource = new DataSource(getApplicationContext());
-        List<Movie> movies = dataSource.getAllPostersMovies();
-        getMoviesByType(movies);
+        List<Movie> movies = mDataSource.getAllPostersMovies();
+        sendMoviesByType(movies);
     }
 
     private void downloadMainMovies(int numPage, String typeMovies) {
-        DataSource dataSource = new DataSource(getApplicationContext());
-        if (dataSource.isTableNotEmpty(MovieTable.TABLE_NAME)) {
-            Log.d(TAG, "Download from Database");
+        mDataSource = new DataSource(getApplicationContext());
+        if (mDataSource.isTableNotEmpty(MovieTable.TABLE_NAME)) {
+            Log.d(TAG, "Download from Movie Table");
             downloadFromDbMainPosters();
         } else {
             if (typeMovies.equals(RestClient.TOP_RATED_MOVIES)) {
@@ -75,7 +158,7 @@ public class DownloadService extends IntentService {
                             public void success(QueryResultMovies queryResultMovies, Response response) {
                                 List<Movie> movies = queryResultMovies.getResults();
                                 fillDataToMovieTable(movies);
-                                getMoviesByType(movies);
+                                sendMoviesByType(movies);
                             }
 
                             @Override
@@ -117,7 +200,7 @@ public class DownloadService extends IntentService {
     }
 
 
-    private void getMoviesByType(List<Movie> movies) {
+    private void sendMoviesByType(List<Movie> movies) {
         if (movies != null) {
             Intent broadcastIntent = new Intent();
             broadcastIntent.putExtra(GridMovieFragment.MOVIE, (Serializable) movies);
@@ -131,8 +214,7 @@ public class DownloadService extends IntentService {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "Fill Database");
-                DataSource mDataSource = new DataSource(getApplicationContext());
+                Log.d(TAG, "Fill Database Table Movies");
                 try {
                     for (int i = 0; i < movies.size(); i++) {
                         if (!mDataSource.checkEntry(movies.get(i).getId())) {
@@ -144,15 +226,26 @@ public class DownloadService extends IntentService {
                         }
                     }
                 } catch (SQLException e) {
-                    Log.d(TAG, "Fail fill database");
+                    Log.d(TAG, "Fail fill database table Movies");
                 }
             }
         }).start();
     }
 
     private String getPosterUrl(Movie movie) {
-        return RestClient.BASE_PATH_TO_IMAGE_W342
+        return RestClient.BASE_PATH_TO_IMAGE_W154
                 + movie.getPosterPath();
+    }
+
+    private String getPosterUrl(MovieDetails details) {
+        return RestClient.BASE_PATH_TO_IMAGE_W154
+                + details.getPosterPath();
+    }
+
+
+    private String getBackdropUrl(MovieDetails details) {
+        return RestClient.BASE_PATH_TO_IMAGE_W342
+                + details.getBackdropPath();
     }
 
     @Nullable
@@ -170,7 +263,7 @@ public class DownloadService extends IntentService {
                 OutputStream outputStream
                         = new BufferedOutputStream(new FileOutputStream(fileImage));
                 createBitmap(inputStream, outputStream);
-                Log.d(TAG, "Load image");
+                Log.d(TAG, "Load image " + fileImage.getName());
                 outputStream.flush();
                 outputStream.close();
                 return fileImage.getPath();
@@ -183,7 +276,9 @@ public class DownloadService extends IntentService {
 
     private Bitmap createBitmap(InputStream is, OutputStream os) {
         Bitmap bitmap = BitmapFactory.decodeStream(is);
-        bitmap.compress(Bitmap.CompressFormat.PNG, 30, os);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
         return bitmap;
     }
+
+
 }

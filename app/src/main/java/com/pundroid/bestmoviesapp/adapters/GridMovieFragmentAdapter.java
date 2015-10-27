@@ -1,5 +1,6 @@
 package com.pundroid.bestmoviesapp.adapters;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.utils.PicassoBitmapTransformation;
 import com.pundroid.bestmoviesapp.utils.RestClient;
+import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -27,11 +29,12 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
     public static final int DESIRED_WIDTH = 2;//size half screen (screen/2)
     private Context mContext;
     private List<String> mPathList;
-
+    private ViewHolder mViewHolder;
 
     public GridMovieFragmentAdapter(List<String> pathToPoster, Context context) {
         mContext = context;
         mPathList = pathToPoster;
+        increaseLRUMemSize();
         Log.d(TAG, "constructor");
     }
 
@@ -61,25 +64,46 @@ public class GridMovieFragmentAdapter extends BaseAdapter {
             viewHolder.mImageView.setAdjustViewBounds(true);
             convertView.setTag(viewHolder);
         }
-        ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+        mViewHolder = (ViewHolder) convertView.getTag();
         String path;
+
         Picasso.with(mContext).setIndicatorsEnabled(true);
         Picasso.with(mContext).setLoggingEnabled(true);
-        if (!mPathList.get(position).contains("data")) {
-            path = RestClient.BASE_PATH_TO_IMAGE_W342 + mPathList.get(position);
-            Transformation transformation = new PicassoBitmapTransformation(mContext, DESIRED_WIDTH);
-            Picasso.with(mContext).load(path).transform(transformation).into(viewHolder.mImageView);
 
+        if (!mPathList.get(position).contains("data")) {
+
+            path = RestClient.BASE_PATH_TO_IMAGE_W154 + mPathList.get(position);
+            Log.d(TAG, mPathList.get(position));
+            loadImagePicasso(path);
         } else {
             path = mPathList.get(position);
             Uri uri = Uri.parse("file://" + path);
             Log.d(TAG, "Path " + uri);
-            Transformation transformation = new PicassoBitmapTransformation(mContext, DESIRED_WIDTH);
-            Picasso.with(mContext).load(uri).transform(transformation).into(viewHolder.mImageView);
+            loadImagePicasso(uri);
         }
 
-
         return convertView;
+    }
+
+    public void increaseLRUMemSize() {
+        int memClass = ((ActivityManager) mContext
+                .getSystemService(Context.ACTIVITY_SERVICE))
+                .getLargeMemoryClass();
+        int cacheSize = 1024 * 1024 * memClass / 4;
+        Picasso picasso = new Picasso.Builder(mContext)
+                .memoryCache(new LruCache(cacheSize))
+                .build();
+    }
+
+
+    private void loadImagePicasso(String path) {
+        Transformation transformation = new PicassoBitmapTransformation(mContext, DESIRED_WIDTH);
+        Picasso.with(mContext).load(path).transform(transformation).into(mViewHolder.mImageView);
+    }
+
+    private void loadImagePicasso(Uri path) {
+        Transformation transformation = new PicassoBitmapTransformation(mContext, DESIRED_WIDTH);
+        Picasso.with(mContext).load(path).transform(transformation).into(mViewHolder.mImageView);
     }
 
 

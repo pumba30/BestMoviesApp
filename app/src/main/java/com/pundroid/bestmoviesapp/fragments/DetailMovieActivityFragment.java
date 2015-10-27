@@ -1,6 +1,12 @@
 package com.pundroid.bestmoviesapp.fragments;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -22,22 +27,26 @@ import com.pundroid.bestmoviesapp.objects.Genres;
 import com.pundroid.bestmoviesapp.objects.MovieDetails;
 import com.pundroid.bestmoviesapp.objects.ProductionCompanies;
 import com.pundroid.bestmoviesapp.objects.ProductionCountries;
+import com.pundroid.bestmoviesapp.service.DownloadHelperService;
 import com.pundroid.bestmoviesapp.utils.RestClient;
 import com.pundroid.bestmoviesapp.utils.ScrollViewExt;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
 public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
     public static final int POSTER_HEIGHT = 300;
     public static final int POSTER_WIDTH = 200;
     public static final int END_SCROLLING = 17;
+    public static final String ACTION_SEND_MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_detail";
+    public static final String MOVIE_DETAIL = "movie_detail";
     private AdView adView;
+    private DownloadHelperService mDownloadHelperService;
+    private ResultDetailMovieReceiver mReceiver = new ResultDetailMovieReceiver();
+    private boolean mIsConnected;
+    private int mMovieId;
+    private View mMainView;
 
     // interface for transmission data from this fragment to DetailActivity
     public interface IDataSendDetailMovie {
@@ -70,48 +79,43 @@ public class DetailMovieActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mIsConnected = isConnected();
 
         Bundle args = getArguments();
-        int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
-        downloadMovieDetail(movieId);
+        mMovieId = args.getInt(GridMovieFragment.MOVIE_ID);
+        mDownloadHelperService = new DownloadHelperService(getActivity(), isConnected());
+        // downloadMovieDetail(mMovieId);
 
     }
 
-    private void downloadMovieDetail(int movieId) {
-        RestClient.get().getDetailMovieById(movieId, new Callback<MovieDetails>() {
-            @Override
-            public void success(MovieDetails movieDetail, Response response) {
-                if (movieDetail != null) {
-                    fillLayout(getView(), movieDetail);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mDownloadHelperService.downloadDetailMovie(mMovieId);
+    }
 
-                    //send data to activity
-                    sendDetailMovie.onDataSendDetailMovie(movieDetail);
-                } else {
-                    Toast.makeText(getActivity(), "Load movie failed", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.d(TAG, "Load movie failed");
-            }
-        });
+    //check internet connection
+    private boolean isConnected() {
+        ConnectivityManager manager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mMainView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
         // Google Ads
-        adView = (AdView) view.findViewById(R.id.adView);
+        adView = (AdView) mMainView.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent("adMob").build();
         adView.loadAd(adRequest);
         //********
 
-        ScrollViewExt scrollView = (ScrollViewExt) view.findViewById(R.id.scrollView_detail_movie);
+        ScrollViewExt scrollView = (ScrollViewExt) mMainView.findViewById(R.id.scrollView_detail_movie);
         // get out ads from end scrollView
         scrollView.setScrollViewListener(new ScrollViewListener() {
             @Override
@@ -129,7 +133,7 @@ public class DetailMovieActivityFragment extends Fragment {
         });
 
         Log.d(TAG, "onCreateView");
-        return view;
+        return mMainView;
     }
 
     private void fillLayout(View view, MovieDetails movie) {
@@ -253,6 +257,7 @@ public class DetailMovieActivityFragment extends Fragment {
             adView.pause();
         }
         super.onPause();
+        getActivity().unregisterReceiver(mReceiver);
     }
 
 
@@ -262,6 +267,7 @@ public class DetailMovieActivityFragment extends Fragment {
         if (adView != null) {
             adView.resume();
         }
+        getActivity().registerReceiver(mReceiver, new IntentFilter(ACTION_SEND_MOVIE_DETAIL));
     }
 
 
@@ -271,6 +277,20 @@ public class DetailMovieActivityFragment extends Fragment {
             adView.destroy();
         }
         super.onDestroy();
+    }
+
+    public class ResultDetailMovieReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = isConnected();
+            MovieDetails details;
+            if (intent != null) {
+                details = (MovieDetails) intent.getSerializableExtra(MOVIE_DETAIL);
+                fillLayout(mMainView, details);
+                sendDetailMovie.onDataSendDetailMovie(details);
+            }
+        }
     }
 
 }

@@ -12,6 +12,7 @@ public class DbSchema {
             public static final String MOVIE_ID = "movie_id";
             public static final String POSTER_PATH_STORAGE = "poster_path_storage";
             public static final String POSTER_PATH_WEB = "poster_path_web";
+            public static final String MOVIE_TITLE = "movie_title";
         }
     }
 

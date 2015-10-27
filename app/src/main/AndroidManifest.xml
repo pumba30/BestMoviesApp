@@ -87,13 +87,11 @@
 
         <receiver
             android:name=".fragments.GridMovieFragment$ResultReceiver"/>
+
+        <receiver
+            android:name=".fragments.DetailMovieActivityFragment$ResultDetailMovieReceiver"/>
+
     </application>
 
-    <provider
-        android:name="com.pundroid.bestmoviesapp.provider.MovieProvider"
-        android:authorities="com.pundroid.bestmoviesapp.provider"
-        android:exported="false"
-        android:multiprocess="true">
-    </provider>
 
 </manifest>

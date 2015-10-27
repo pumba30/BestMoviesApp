@@ -51,7 +51,7 @@ import java.util.List;
 public class GridMovieFragment extends Fragment {
     public static final String TAG = GridMovieFragment.class.getSimpleName();
     public static final String MOVIE_TITLE = "com.pundroid.bestmoviesapp.movie_title";
-    public static final String ACTION_SEND_MOVIE = "com.pundroid.bestmoviesapp.send_movie_detail";
+    public static final String ACTION_SEND_MOVIE = "com.pundroid.bestmoviesapp.send_movie";
     public static final String MOVIE = "com.pundroid.bestmoviesapp.send_movie";
     public static String MOVIE_ID = "com.pundroid.bestmoviesapp.movie_id";
     public static final String PATH_POSTER = "path_poster";
@@ -115,7 +115,7 @@ public class GridMovieFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // here we pass different types of films
         mProgressBar.setVisibility(View.VISIBLE);
-        mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+        mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
         toastShowPageNumber();
     }
 
@@ -224,13 +224,13 @@ public class GridMovieFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 mNumPage++;
-                mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+                mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
                 toastShowPageNumber();
                 return true;
             case R.id.action_back:
                 mNumPage--;
                 if (mNumPage <= 0) mNumPage = 1;
-                mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+                mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
                 toastShowPageNumber();
                 return true;
         }
@@ -255,19 +255,19 @@ public class GridMovieFragment extends Fragment {
             switch (position) {
                 case 1:
                     mTypeMovies = RestClient.TOP_RATED_MOVIES;
-                    mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
                     mDrawerLayout.closeDrawers();
                     break;
                 case 2:
                     mTypeMovies = RestClient.POPULAR_MOVIES;
                     mNumPage = 1;
-                    mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
                     mDrawerLayout.closeDrawers();
                     break;
                 case 3:
                     mTypeMovies = RestClient.UPCOMING_MOVIES;
                     mNumPage = 1;
-                    mHelperService.downloadMovieIntent(mNumPage, mTypeMovies);
+                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
                     mDrawerLayout.closeDrawers();
                     break;
 
