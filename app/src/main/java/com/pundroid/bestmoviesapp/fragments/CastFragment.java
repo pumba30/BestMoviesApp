@@ -15,10 +15,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.pundroid.bestmoviesapp.activity.BiographyActorActivity;
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.activity.BiographyActorActivity;
+import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.adapters.CastListAdapter;
 import com.pundroid.bestmoviesapp.objects.Actor;
 import com.pundroid.bestmoviesapp.objects.Credits;
@@ -41,7 +40,7 @@ public class CastFragment extends Fragment {
     private ArrayList<Actor> actors = new ArrayList<>();
     private ListView listView;
     private int movieId;
-    private AdView adView;
+
 
 
     public static CastFragment newInstance() {
@@ -93,13 +92,6 @@ public class CastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_tab_cast, container, false);
 
-        // Google Ads
-        adView = (AdView) view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .setRequestAgent("adMob").build();
-        adView.loadAd(adRequest);
-        //********
-
         listView = (ListView) view.findViewById(R.id.list_cast_actors);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -122,9 +114,9 @@ public class CastFragment extends Fragment {
                 // get out ads from last list's item
                 int lastVisiblePosition = view.getLastVisiblePosition() + 1;
                 if (lastVisiblePosition == (totalItemCount - 1)) {
-                    adView.setVisibility(View.INVISIBLE);
+                   DetailMovieActivity.adView.setVisibility(View.INVISIBLE);
                 } else if (lastVisiblePosition < (totalItemCount - 1)) {
-                    adView.setVisibility(View.VISIBLE);
+                    DetailMovieActivity.adView.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -141,33 +133,6 @@ public class CastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void onPause() {
-        if (adView != null) {
-            adView.pause();
-        }
-        super.onPause();
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (adView != null) {
-            adView.resume();
-        }
-    }
-
-
-    @Override
-    public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
-        }
-        super.onDestroy();
-    }
-
 
 }
 

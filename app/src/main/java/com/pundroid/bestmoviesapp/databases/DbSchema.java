@@ -17,7 +17,7 @@ public class DbSchema {
     }
 
     public static final class DetailsMovieTable {
-        public static final String TABLE_NAME = "detail_movie";
+        public static final String TABLE_NAME = "details_movie";
 
         public static final class Column {
             public static final String ROW_ID = "_id";
@@ -40,6 +40,7 @@ public class DbSchema {
             public static final String REVENUE = "revenue";
             public static final String RUNTIME = "runtime";
             public static final String HOMEPAGE = "homepage";
+
 
         }
     }

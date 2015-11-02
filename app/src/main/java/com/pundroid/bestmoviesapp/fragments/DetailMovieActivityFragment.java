@@ -19,9 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.activity.MainActivity;
 import com.pundroid.bestmoviesapp.objects.Genres;
 import com.pundroid.bestmoviesapp.objects.MovieDetails;
@@ -38,10 +37,9 @@ public class DetailMovieActivityFragment extends Fragment {
     public static final String TAG = DetailMovieActivityFragment.class.getSimpleName();
     public static final int POSTER_HEIGHT = 300;
     public static final int POSTER_WIDTH = 200;
-    public static final int END_SCROLLING = 17;
+    public static final int END_SCROLLING = 100;
     public static final String ACTION_SEND_MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_detail";
     public static final String MOVIE_DETAIL = "movie_detail";
-    private AdView adView;
     private DownloadHelperService mDownloadHelperService;
     private ResultDetailMovieReceiver mReceiver = new ResultDetailMovieReceiver();
     private boolean mIsConnected;
@@ -83,7 +81,7 @@ public class DetailMovieActivityFragment extends Fragment {
 
         Bundle args = getArguments();
         mMovieId = args.getInt(GridMovieFragment.MOVIE_ID);
-        mDownloadHelperService = new DownloadHelperService(getActivity(), isConnected());
+        mDownloadHelperService = new DownloadHelperService(getActivity());
         // downloadMovieDetail(mMovieId);
 
     }
@@ -91,7 +89,7 @@ public class DetailMovieActivityFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDownloadHelperService.downloadDetailMovie(mMovieId);
+        mDownloadHelperService.downloadDetailMovie(mMovieId, mIsConnected);
     }
 
     //check internet connection
@@ -108,13 +106,6 @@ public class DetailMovieActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         mMainView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
-        // Google Ads
-        adView = (AdView) mMainView.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .setRequestAgent("adMob").build();
-        adView.loadAd(adRequest);
-        //********
-
         ScrollViewExt scrollView = (ScrollViewExt) mMainView.findViewById(R.id.scrollView_detail_movie);
         // get out ads from end scrollView
         scrollView.setScrollViewListener(new ScrollViewListener() {
@@ -125,9 +116,9 @@ public class DetailMovieActivityFragment extends Fragment {
 
                 Log.d(TAG, "DIFF= :" + diff);
                 if (diff < END_SCROLLING) {
-                    adView.setVisibility(View.INVISIBLE);
+                    DetailMovieActivity.adView.setVisibility(View.INVISIBLE);
                 } else if (diff > END_SCROLLING) {
-                    adView.setVisibility(View.VISIBLE);
+                    DetailMovieActivity.adView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -253,9 +244,6 @@ public class DetailMovieActivityFragment extends Fragment {
 
     @Override
     public void onPause() {
-        if (adView != null) {
-            adView.pause();
-        }
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
     }
@@ -264,20 +252,9 @@ public class DetailMovieActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (adView != null) {
-            adView.resume();
-        }
         getActivity().registerReceiver(mReceiver, new IntentFilter(ACTION_SEND_MOVIE_DETAIL));
     }
 
-
-    @Override
-    public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
-        }
-        super.onDestroy();
-    }
 
     public class ResultDetailMovieReceiver extends BroadcastReceiver {
 

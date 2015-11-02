@@ -54,7 +54,6 @@ public class GridMovieFragment extends Fragment {
     public static final String ACTION_SEND_MOVIE = "com.pundroid.bestmoviesapp.send_movie";
     public static final String MOVIE = "com.pundroid.bestmoviesapp.send_movie";
     public static String MOVIE_ID = "com.pundroid.bestmoviesapp.movie_id";
-    public static final String PATH_POSTER = "path_poster";
     private GridView mGridView;
     private String[] mNavMenuTitles;
     private TypedArray mNavMenuIcons;
@@ -64,7 +63,6 @@ public class GridMovieFragment extends Fragment {
     private String mTypeMovies = RestClient.TOP_RATED_MOVIES;
     private ResultReceiver mResultReceiver = new ResultReceiver();
     private ProgressBar mProgressBar;
-    // при getString(R.string.guest) вылетает!!
     private String mUserName = " guest!";
     private boolean mIsLogin;
     private boolean mIsConnected;
@@ -89,11 +87,10 @@ public class GridMovieFragment extends Fragment {
 
         if (mIsLogin) {
             mUserName = " " + preferences.getString(PrefUtils.KEY_SESSION_USER_USERNAME,
-                    " guest") + "!";
+                    getResources().getString(R.string.guest));
         }
 
-        mHelperService = new DownloadHelperService(getActivity().getApplicationContext(),
-                isConnected());
+        mHelperService = new DownloadHelperService(getActivity().getApplicationContext());
 
         // load slide menu items
         mNavMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
@@ -101,6 +98,7 @@ public class GridMovieFragment extends Fragment {
         mNavMenuIcons = getResources()
                 .obtainTypedArray(R.array.nav_drawer_icons);
     }
+
 
     //check internet connection
     private boolean isConnected() {
@@ -115,7 +113,7 @@ public class GridMovieFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // here we pass different types of films
         mProgressBar.setVisibility(View.VISIBLE);
-        mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
+        mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies, isConnected());
         toastShowPageNumber();
     }
 
@@ -224,13 +222,13 @@ public class GridMovieFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 mNumPage++;
-                mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
+                mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies, mIsConnected);
                 toastShowPageNumber();
                 return true;
             case R.id.action_back:
                 mNumPage--;
                 if (mNumPage <= 0) mNumPage = 1;
-                mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
+                mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies, mIsConnected);
                 toastShowPageNumber();
                 return true;
         }
@@ -255,19 +253,19 @@ public class GridMovieFragment extends Fragment {
             switch (position) {
                 case 1:
                     mTypeMovies = RestClient.TOP_RATED_MOVIES;
-                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
+                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies, mIsConnected);
                     mDrawerLayout.closeDrawers();
                     break;
                 case 2:
                     mTypeMovies = RestClient.POPULAR_MOVIES;
                     mNumPage = 1;
-                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
+                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies, mIsConnected);
                     mDrawerLayout.closeDrawers();
                     break;
                 case 3:
                     mTypeMovies = RestClient.UPCOMING_MOVIES;
                     mNumPage = 1;
-                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies);
+                    mHelperService.downloadMoviesIntent(mNumPage, mTypeMovies, mIsConnected);
                     mDrawerLayout.closeDrawers();
                     break;
 
@@ -317,11 +315,9 @@ public class GridMovieFragment extends Fragment {
             if (intent != null) {
                 mMovies = (ArrayList<Movie>) intent.getSerializableExtra(MOVIE);
                 for (int i = 0; i < mMovies.size(); i++) {
-                    //*****************
                     if (isConnected) {
                         pathPoster.add(mMovies.get(i).getPosterPath());
                     }
-                    //*****************
                     if (!isConnected) {
                         pathPoster.add(mMovies.get(i).getPosterPathStorage());
                     }

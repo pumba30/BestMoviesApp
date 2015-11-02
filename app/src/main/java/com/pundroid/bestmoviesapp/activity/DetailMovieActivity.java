@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.R;
 import com.pundroid.bestmoviesapp.adapters.PagerTabSlideAdapter;
 import com.pundroid.bestmoviesapp.fragments.CastFragment;
@@ -38,6 +40,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     private boolean mIsLogin;
     private int mMovieId;
     private String mSessionId;
+    public static AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         mSessionId = preferences.getString(PrefUtils.KEY_SESSION_ID, null);
         mIsLogin = preferences.getBoolean(PrefUtils.KEY_USER_IS_IN_ACCOUNT, false);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.include_my_toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -60,11 +63,20 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
+        // Google Ads
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .setRequestAgent("adMob").build();
+        adView.loadAd(adRequest);
+        //********
 
         // idMovie transferred for further processing
         mMovieId = getIntent().getExtras().getInt(GridMovieFragment.MOVIE_ID);
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
+        setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
+        String s = getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE);
 
+        Log.d(TAG, "TITLE " + s);
         Bundle args = new Bundle();
         args.putInt(GridMovieFragment.MOVIE_ID, mMovieId);
 
@@ -190,6 +202,33 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
     @Override
     public void onDataSendDetailMovie(MovieDetails movieDetail) {
         this.mMovieDetail = movieDetail;
+    }
+
+
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 
 }

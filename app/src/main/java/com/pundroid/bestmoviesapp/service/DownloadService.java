@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.pundroid.bestmoviesapp.databases.DataSource;
-import com.pundroid.bestmoviesapp.databases.DbSchema.MovieTable;
 import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
 import com.pundroid.bestmoviesapp.objects.Movie;
@@ -75,6 +74,7 @@ public class DownloadService extends IntentService {
                 downloadDetailMovie(movieId);
             } else {
                 downloadFromDbDetailMovies(movieId);
+                Log.d(TAG, "Load from DB MovieDetails");
             }
 
         }
@@ -104,17 +104,25 @@ public class DownloadService extends IntentService {
             @Override
             public void run() {
                 try {
+                    //reuse poster image
+                    String posterPathStorage = saveImageToStorage(getPosterUrl(details), details.getId() + 77);
+                    String backdropPathToStorage = saveImageToStorage(getBackdropUrl(details), details.getId() + 88);
+                    details.setPosterPathStorage(posterPathStorage);
+                    details.setBackdropPathStorage(backdropPathToStorage);
 
-                        //reuse poster image
-                        String posterPathStorage = saveImageToStorage(getPosterUrl(details),
-                                details.getId());
-                        int backDropId = details.getId() + LAST_SEGMENT;
-                        String backdropPathToStorage = saveImageToStorage(getBackdropUrl(details),
-                                backDropId);
-                        details.setPosterPathStorage(posterPathStorage);
-                        details.setBackdropPath(backdropPathToStorage);
-                        mDataSource.saveMovieDetail(details);
-                        Log.d(TAG, "Save Movie Detail");
+                    //insert in table details_movie
+                    long movieInsertId = mDataSource.saveMovieDetail(details);
+                    // // insert in table genres
+                    long[] genreInsertId = mDataSource.saveGenres(details);
+                    // // insert in table movie_genres
+                    mDataSource.insertGenresMovie(movieInsertId, genreInsertId);
+
+                    long[] countryInsertIds = mDataSource.saveProductionCountries(details);
+                    mDataSource.insertProdCountryMovie(movieInsertId, countryInsertIds);
+
+                    long[] companiesInsertIds = mDataSource.saveProductionCompanies(details);
+                    mDataSource.insertProdCompanyMovie(movieInsertId, companiesInsertIds);
+
 
                 } catch (SQLException e) {
                     Log.d(TAG, "Fail fill database table Movies");
@@ -123,10 +131,11 @@ public class DownloadService extends IntentService {
         }).start();
     }
 
+
     private void downloadFromDbDetailMovies(int movieId) {
-            Log.d(TAG, "downloadFromDbDetailMovies");
-            MovieDetails details = mDataSource.getMovieDetails(movieId);
-            sendMovieDetails(details);
+        Log.d(TAG, "downloadFromDbDetailMovies");
+        MovieDetails details = mDataSource.getMovieDetails(movieId);
+        sendMovieDetails(details);
     }
 
 
@@ -147,7 +156,7 @@ public class DownloadService extends IntentService {
 
     private void downloadMainMovies(int numPage, String typeMovies) {
         mDataSource = new DataSource(getApplicationContext());
-        if (mDataSource.isTableNotEmpty(MovieTable.TABLE_NAME)) {
+        if (mDataSource.isTableNotEmpty("movies")) {
             Log.d(TAG, "Download from Movie Table");
             downloadFromDbMainPosters();
         } else {
@@ -263,7 +272,7 @@ public class DownloadService extends IntentService {
                 OutputStream outputStream
                         = new BufferedOutputStream(new FileOutputStream(fileImage));
                 createBitmap(inputStream, outputStream);
-                Log.d(TAG, "Load image " + fileImage.getName());
+                Log.d(TAG, "Save image " + fileImage.getName());
                 outputStream.flush();
                 outputStream.close();
                 return fileImage.getPath();

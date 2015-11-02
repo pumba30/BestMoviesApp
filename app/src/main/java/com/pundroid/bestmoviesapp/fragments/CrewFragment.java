@@ -13,9 +13,8 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.pundroid.bestmoviesapp.R;
+import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.adapters.CrewListAdapter;
 import com.pundroid.bestmoviesapp.objects.Credits;
 import com.pundroid.bestmoviesapp.objects.CrewMember;
@@ -33,7 +32,7 @@ import retrofit.client.Response;
 public class CrewFragment extends Fragment {
     private static final String TAG = CrewFragment.class.getSimpleName();
     private static CrewFragment instance;
-    private AdView adView;
+
 
     private ListView listViewCrew;
     private ArrayList<CrewMember> mCrewMembers = new ArrayList<>();
@@ -91,13 +90,6 @@ public class CrewFragment extends Fragment {
         Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_detail_tab_crew, container, false);
 
-        // Google Ads
-        adView = (AdView) view.findViewById(R.id.adView);
-        final AdRequest adRequest = new AdRequest.Builder()
-                .setRequestAgent("adMob").build();
-        adView.loadAd(adRequest);
-        //********
-
         listViewCrew = (ListView) view.findViewById(R.id.list_crew_movie);
         listViewCrew.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -110,9 +102,9 @@ public class CrewFragment extends Fragment {
                // get out ads from last list's item
                 int lastVisiblePosition = view.getLastVisiblePosition() + 1;
                 if (lastVisiblePosition == (totalItemCount - 1)) {
-                    adView.setVisibility(View.INVISIBLE);
+                    DetailMovieActivity.adView.setVisibility(View.INVISIBLE);
                 } else if (lastVisiblePosition < (totalItemCount - 1)) {
-                    adView.setVisibility(View.VISIBLE);
+                    DetailMovieActivity.adView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -134,30 +126,5 @@ public class CrewFragment extends Fragment {
 
     }
 
-    @Override
-    public void onPause() {
-        if (adView != null) {
-            adView.pause();
-        }
-        super.onPause();
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (adView != null) {
-            adView.resume();
-        }
-    }
-
-
-    @Override
-    public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
-        }
-        super.onDestroy();
-    }
 
 }
