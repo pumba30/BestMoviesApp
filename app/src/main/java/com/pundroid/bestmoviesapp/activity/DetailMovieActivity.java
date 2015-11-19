@@ -47,7 +47,6 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
 
-
         SharedPreferences preferences = getApplicationContext()
                 .getSharedPreferences(PrefUtils.KEY_SHARED_PREF, Context.MODE_PRIVATE);
         mSessionId = preferences.getString(PrefUtils.KEY_SESSION_ID, null);
@@ -76,6 +75,7 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         setTitle(getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE));
         String s = getIntent().getExtras().getString(GridMovieFragment.MOVIE_TITLE);
 
+
         Log.d(TAG, "TITLE " + s);
         Bundle args = new Bundle();
         args.putInt(GridMovieFragment.MOVIE_ID, mMovieId);
@@ -94,6 +94,8 @@ public class DetailMovieActivity extends ActionBarActivity implements DetailMovi
         CrewFragment.newInstance().setArguments(args);
 
     }
+
+
 
     @Override
     protected void onRestoreInstanceState(Bundle outState) {

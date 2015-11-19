@@ -1,6 +1,11 @@
 package com.pundroid.bestmoviesapp.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,14 +25,9 @@ import com.pundroid.bestmoviesapp.activity.BiographyActorActivity;
 import com.pundroid.bestmoviesapp.activity.DetailMovieActivity;
 import com.pundroid.bestmoviesapp.adapters.CastListAdapter;
 import com.pundroid.bestmoviesapp.objects.Actor;
-import com.pundroid.bestmoviesapp.objects.Credits;
-import com.pundroid.bestmoviesapp.utils.RestClient;
+import com.pundroid.bestmoviesapp.service.DownloadHelperService;
 
 import java.util.ArrayList;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by pumba30 on 23.08.2015.
@@ -36,11 +36,13 @@ public class CastFragment extends Fragment {
 
     private static final String TAG = CastFragment.class.getSimpleName();
     public static final String ACTOR_ID = "actor_id";
+    public static final String ACTOR = "actor";
+    public static final String ACTORS_DATA = "actors_data";
+    public static final String ACTION_SEND_ACTORS_DATA = "action_send_actors_data";
     private static CastFragment instance;
     private ArrayList<Actor> actors = new ArrayList<>();
     private ListView listView;
-    private int movieId;
-
+    private ResultActorsDataReceiver mReceiver = new ResultActorsDataReceiver();
 
 
     public static CastFragment newInstance() {
@@ -57,7 +59,9 @@ public class CastFragment extends Fragment {
 
         Bundle args = getArguments();
         int movieId = args.getInt(GridMovieFragment.MOVIE_ID);
-        loadActorByMovieId(movieId);
+        DownloadHelperService helperService = new DownloadHelperService(getActivity());
+        helperService.downloadActors(movieId, isConnected(), ACTOR);
+        Log.d(TAG, "onActivityCreated");
     }
 
     @Override
@@ -66,27 +70,6 @@ public class CastFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    private void loadActorByMovieId(final int idMovie) {
-        //Use RestClient for each request
-        RestClient.get().getCreditsOfMovie(idMovie, new Callback<Credits>() {
-            @Override
-            public void success(Credits credits, Response response) {
-                if (credits != null) {
-                    actors = credits.getActors();
-                    listView.setAdapter(new CastListAdapter(getActivity(), actors));
-                } else {
-                    listView.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "Actors loading failed",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.d(TAG, "Actors loading failed");
-            }
-        });
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,7 +97,7 @@ public class CastFragment extends Fragment {
                 // get out ads from last list's item
                 int lastVisiblePosition = view.getLastVisiblePosition() + 1;
                 if (lastVisiblePosition == (totalItemCount - 1)) {
-                   DetailMovieActivity.adView.setVisibility(View.INVISIBLE);
+                    DetailMovieActivity.adView.setVisibility(View.INVISIBLE);
                 } else if (lastVisiblePosition < (totalItemCount - 1)) {
                     DetailMovieActivity.adView.setVisibility(View.VISIBLE);
                 }
@@ -122,6 +105,14 @@ public class CastFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    //check internet connection
+    private boolean isConnected() {
+        ConnectivityManager manager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     @Override
@@ -134,5 +125,31 @@ public class CastFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(mReceiver, new IntentFilter(ACTION_SEND_ACTORS_DATA));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mReceiver);
+    }
+
+    public class ResultActorsDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                actors = (ArrayList<Actor>) intent.getSerializableExtra(ACTORS_DATA);
+                listView.setAdapter(new CastListAdapter(getActivity(), actors));
+            } else {
+                listView.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), "Actors loading failed",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
 

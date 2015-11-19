@@ -16,14 +16,14 @@
     <!-- view for AdMob Banner Ad -->
     <com.astuetz.PagerSlidingTabStrip
             android:id="@+id/tabs"
-            app:pstsDividerColor="@color/dark_dark_green"
-            app:pstsIndicatorColor="@color/dark_green"
-            app:pstsUnderlineColor="@color/dark_green"
+            app:pstsDividerColor="#8BC34A"
+            app:pstsIndicatorColor="#8BC34A"
+            app:pstsUnderlineColor="#8BC34A"
             app:pstsShouldExpand="true"
             app:pstsTextAllCaps="true"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="#435bcc2d"
+            android:background="#9CCC65"
             android:layout_below="@+id/include_my_toolbar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">

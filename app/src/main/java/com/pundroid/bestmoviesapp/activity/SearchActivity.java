@@ -64,9 +64,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         setTitle(getString(R.string.search));
-
         listViewSearch = (ListView) findViewById(R.id.listView_search);
-
     }
 
     @Override

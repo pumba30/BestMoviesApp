@@ -63,12 +63,12 @@ public class CastListAdapter extends BaseAdapter {
         }
 
         Actor actor = mActors.get(position);
-        if (actor.getProfilePath() != null
+        if (actor.getProfilePathWeb() != null
                 || actor.getName() != null
                 || actor.getCharacter() != null) {
             viewHolder.mNameActor.setText(actor.getName());
             viewHolder.mCharacterActor.setText(actor.getCharacter());
-            String path = actor.getProfilePath();
+            String path = actor.getProfilePathWeb();
             if (path != null) {
                 resizeImage(viewHolder.mImageView);
                 Picasso.with(mContext).load(RestClient.BASE_PATH_TO_IMAGE_W92 + path)

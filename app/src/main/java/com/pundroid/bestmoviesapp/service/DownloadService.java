@@ -8,9 +8,14 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.pundroid.bestmoviesapp.databases.DataSource;
+import com.pundroid.bestmoviesapp.database.DataSource;
+import com.pundroid.bestmoviesapp.database.DbSchema.ActorTable;
+import com.pundroid.bestmoviesapp.database.DbSchema.MovieTable;
+import com.pundroid.bestmoviesapp.fragments.CastFragment;
 import com.pundroid.bestmoviesapp.fragments.DetailMovieActivityFragment;
 import com.pundroid.bestmoviesapp.fragments.GridMovieFragment;
+import com.pundroid.bestmoviesapp.objects.Actor;
+import com.pundroid.bestmoviesapp.objects.Credits;
 import com.pundroid.bestmoviesapp.objects.Movie;
 import com.pundroid.bestmoviesapp.objects.MovieDetails;
 import com.pundroid.bestmoviesapp.objects.QueryResultMovies;
@@ -37,8 +42,8 @@ import retrofit.client.Response;
 public class DownloadService extends IntentService {
     public static final String TAG = DownloadService.class.getSimpleName();
     public static final String JPG = ".jpg";
-    public static final int LAST_SEGMENT = 99;
     private DataSource mDataSource;
+
 
     public DownloadService() {
         super("DownloadService");
@@ -78,6 +83,32 @@ public class DownloadService extends IntentService {
             }
 
         }
+
+        if (intent != null && intent.hasExtra(DownloadHelperService.ACTOR)) {
+            int movieId = intent.getIntExtra(DownloadHelperService.MOVIE_ID, 0);
+            boolean isConnected = intent.getBooleanExtra(DownloadHelperService.IS_CONNECTED, true);
+            if (isConnected) {
+                //get actors by movie_id
+                loadActorByMovieIdFromWeb(movieId);
+            } else {
+                downloadFromDbActors(movieId);
+            }
+        }
+    }
+
+    private void downloadFromDbActors(int movieId) {
+        List<Actor> actors = mDataSource.fetchFromActorTable(movieId);
+        sendDataActors(actors);
+    }
+
+    private void sendDataActors(List<Actor> actors) {
+        if (actors != null) {
+            Intent broadcastIntent = new Intent();
+            broadcastIntent.putExtra(CastFragment.ACTORS_DATA, (Serializable) actors);
+            broadcastIntent.setAction(CastFragment.ACTION_SEND_ACTORS_DATA);
+            sendBroadcast(broadcastIntent);
+            stopSelf();
+        }
     }
 
     private void downloadDetailMovie(int movieId) {
@@ -111,24 +142,25 @@ public class DownloadService extends IntentService {
                     details.setBackdropPathStorage(backdropPathToStorage);
 
                     //insert in table details_movie
-                    long movieInsertId = mDataSource.saveMovieDetail(details);
-                    // // insert in table genres
+                    long mMovieInsertId = mDataSource.saveMovieDetail(details);
+
+                    // insert in table genres
                     long[] genreInsertId = mDataSource.saveGenres(details);
-                    // // insert in table movie_genres
-                    mDataSource.insertGenresMovie(movieInsertId, genreInsertId);
+                    // insert in table movie_genres
+                    mDataSource.insertGenresMovie(mMovieInsertId, genreInsertId);
 
                     long[] countryInsertIds = mDataSource.saveProductionCountries(details);
-                    mDataSource.insertProdCountryMovie(movieInsertId, countryInsertIds);
+                    mDataSource.insertProdCountryMovie(mMovieInsertId, countryInsertIds);
 
                     long[] companiesInsertIds = mDataSource.saveProductionCompanies(details);
-                    mDataSource.insertProdCompanyMovie(movieInsertId, companiesInsertIds);
-
+                    mDataSource.insertProdCompanyMovie(mMovieInsertId, companiesInsertIds);
 
                 } catch (SQLException e) {
                     Log.d(TAG, "Fail fill database table Movies");
                 }
             }
         }).start();
+
     }
 
 
@@ -156,7 +188,7 @@ public class DownloadService extends IntentService {
 
     private void downloadMainMovies(int numPage, String typeMovies) {
         mDataSource = new DataSource(getApplicationContext());
-        if (mDataSource.isTableNotEmpty("movies")) {
+        if (mDataSource.isTableNotEmpty(MovieTable.TABLE_NAME)) {
             Log.d(TAG, "Download from Movie Table");
             downloadFromDbMainPosters();
         } else {
@@ -209,6 +241,58 @@ public class DownloadService extends IntentService {
     }
 
 
+    private void loadActorByMovieIdFromWeb(final int idMovie) {
+        //Use RestClient for each request
+        RestClient.get().getCreditsOfMovie(idMovie, new Callback<Credits>() {
+            @Override
+            public void success(Credits credits, Response response) {
+                if (credits != null) {
+                    List<Actor> actors = credits.getActors();
+                    fillDataActorsToTable(actors, idMovie);
+                    sendDataActors(actors);
+
+                } else {
+                    Log.d(TAG, "Actors loading failed");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d(TAG, "Actors loading failed");
+            }
+        });
+    }
+
+    private void fillDataActorsToTable(final List<Actor> actors, final int movieId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    long[] insertActorIdArr = new long[actors.size()];
+                    if (actors.size() > 0) {
+                        for (int i = 0; i < actors.size(); i++) {
+                            if (!mDataSource.checkEntry(ActorTable.TABLE_NAME, ActorTable.Column.ACTOR_ID,
+                                    actors.get(i).getId())) {
+                                String pathPhotoToStorage =
+                                        saveImageToStorage(getActorPhotoPathUrl(actors.get(i)),
+                                                actors.get(i).getId() + 89);
+                                actors.get(i).setProfilePathToStorage(pathPhotoToStorage);
+                                insertActorIdArr[i] = mDataSource.saveActor(actors.get(i));
+                            }
+                        }
+                        if (insertActorIdArr.length > 0) {
+                            mDataSource.insertMovieActor(movieId, insertActorIdArr);
+                        }
+                    }
+                } catch (SQLException e) {
+                    Log.d(TAG, "Fail fill database table Actor");
+                }
+            }
+
+        }).start();
+    }
+
+
     private void sendMoviesByType(List<Movie> movies) {
         if (movies != null) {
             Intent broadcastIntent = new Intent();
@@ -225,12 +309,13 @@ public class DownloadService extends IntentService {
             public void run() {
                 Log.d(TAG, "Fill Database Table Movies");
                 try {
-                    for (int i = 0; i < movies.size(); i++) {
-                        if (!mDataSource.checkEntry(movies.get(i).getId())) {
-                            String pathStorage = saveImageToStorage(getPosterUrl(movies.get(i)),
-                                    movies.get(i).getId());
-                            movies.get(i).setPosterPathStorage(pathStorage);
-                            mDataSource.saveMainMovie(movies.get(i));
+                    for (Movie movie : movies) {
+                        if (!mDataSource.checkEntry(MovieTable.TABLE_NAME, MovieTable.Column.MOVIE_ID,
+                                movie.getId())) {
+                            String pathStorage = saveImageToStorage(getPosterUrl(movie),
+                                    movie.getId() + 99);
+                            movie.setPosterPathStorage(pathStorage);
+                            mDataSource.saveMainMovie(movie);
                             Log.d(TAG, "  : " + pathStorage);
                         }
                     }
@@ -239,6 +324,10 @@ public class DownloadService extends IntentService {
                 }
             }
         }).start();
+    }
+
+    private String getActorPhotoPathUrl(Actor actor) {
+        return RestClient.BASE_PATH_TO_IMAGE_W154 + actor.getProfilePathWeb();
     }
 
     private String getPosterUrl(Movie movie) {
@@ -258,8 +347,8 @@ public class DownloadService extends IntentService {
     }
 
     @Nullable
-    private String saveImageToStorage(String pathWeb, int movieId) {
-        String movieName = String.valueOf(movieId);
+    private String saveImageToStorage(String pathWeb, int objectId) {
+        String movieName = String.valueOf(objectId);
         File fileImage = new File(getApplicationContext().getCacheDir(), movieName + JPG);
 
         if (!fileImage.exists()) {

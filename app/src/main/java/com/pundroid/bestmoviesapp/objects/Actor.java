@@ -3,15 +3,17 @@ package com.pundroid.bestmoviesapp.objects;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by pumba30 on 26.08.2015.
  */
-public class Actor {
+public class Actor implements Serializable {
 
     @Expose
     private String character;
     @Expose
-    private Long id;
+    private int id;
     @Expose
     private String name;
     @SerializedName("profile_path")
@@ -50,7 +52,7 @@ public class Actor {
      * @return
      * The id
      */
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -59,7 +61,7 @@ public class Actor {
      * @param id
      * The id
      */
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -86,7 +88,7 @@ public class Actor {
      * @return
      * The profilePath
      */
-    public String getProfilePath() {
+    public String getProfilePathWeb() {
         return profilePath;
     }
 
@@ -98,4 +100,6 @@ public class Actor {
     public void setProfilePath(String profilePath) {
         this.profilePath = profilePath;
     }
+
+
 }

@@ -91,6 +91,8 @@
         <receiver
             android:name=".fragments.DetailMovieActivityFragment$ResultDetailMovieReceiver"/>
 
+        <receiver android:name=".fragments.CastFragment$ResultActorsDataReceiver"/>
+
     </application>
 
 

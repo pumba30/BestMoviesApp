@@ -3,9 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/dark_green</item>
-        <item name="android:textColorPrimary">#708176</item>
-        <item name="android:textColorSecondary">#6b3e8aac</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">#8BC34A</item>
+        <item name="android:textColorPrimary">#808080</item>
+        <item name="android:textColorSecondary">#5e5e5e</item>
 
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>

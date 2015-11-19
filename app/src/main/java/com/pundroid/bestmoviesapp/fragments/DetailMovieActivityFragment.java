@@ -40,9 +40,8 @@ public class DetailMovieActivityFragment extends Fragment {
     public static final int END_SCROLLING = 100;
     public static final String ACTION_SEND_MOVIE_DETAIL = "com.pundroid.bestmoviesapp.send_movie_detail";
     public static final String MOVIE_DETAIL = "movie_detail";
-    private DownloadHelperService mDownloadHelperService;
     private ResultDetailMovieReceiver mReceiver = new ResultDetailMovieReceiver();
-    private boolean mIsConnected;
+
     private int mMovieId;
     private View mMainView;
 
@@ -71,35 +70,36 @@ public class DetailMovieActivityFragment extends Fragment {
         super.onAttach(activity);
         // init interface
         sendDetailMovie = (IDataSendDetailMovie) activity;
+        Log.d(TAG, "onAttach");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mIsConnected = isConnected();
 
         Bundle args = getArguments();
         mMovieId = args.getInt(GridMovieFragment.MOVIE_ID);
-        mDownloadHelperService = new DownloadHelperService(getActivity());
-        // downloadMovieDetail(mMovieId);
 
+        Log.d(TAG, "onCreate");
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDownloadHelperService.downloadDetailMovie(mMovieId, mIsConnected);
+        DownloadHelperService downloadHelperService =
+                new DownloadHelperService(getActivity());
+        downloadHelperService.downloadDetailMovie(mMovieId, isConnected());
     }
 
     //check internet connection
     private boolean isConnected() {
-        ConnectivityManager manager = (ConnectivityManager) getActivity()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -220,7 +220,7 @@ public class DetailMovieActivityFragment extends Fragment {
         runtime.setText(runtimeStr);
 
         TextView revenue = (TextView) view.findViewById(R.id.cell_revenue);
-        revenue.setText(String.valueOf(movie.getRuntime()));
+        revenue.setText(String.valueOf(movie.getRevenue() + " $"));
 
         TextView homePage = (TextView) view.findViewById(R.id.tv_homepage_description);
         homePage.setText(movie.getHomepage());
@@ -230,8 +230,6 @@ public class DetailMovieActivityFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.menu_detail_movie, menu);
-
     }
 
     @Override
@@ -244,6 +242,7 @@ public class DetailMovieActivityFragment extends Fragment {
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause");
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
     }
@@ -260,7 +259,6 @@ public class DetailMovieActivityFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean isConnected = isConnected();
             MovieDetails details;
             if (intent != null) {
                 details = (MovieDetails) intent.getSerializableExtra(MOVIE_DETAIL);
